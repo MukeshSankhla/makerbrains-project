@@ -196,22 +196,19 @@ export const UserProfile = () => {
           {!isEditing ? (
             <div className="space-y-6 mt-4">
               <div>
-                <Label className="font-semibold">Bio/Info</Label>
+                <Label className="font-semibold">Bio</Label>
                 <div className="flex items-center gap-2 mt-1">
-                  <Info className="h-4 w-4 text-muted-foreground" />
                   <span className="whitespace-pre-line">{userProfile.info || <span className="text-muted-foreground italic">No bio</span>}</span>
                 </div>
               </div>
               <div>
                 <Label className="font-semibold">Address</Label>
                 <div className="flex items-center gap-2 mt-1">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
                   <span>{userProfile.address || <span className="text-muted-foreground italic">No address</span>}</span>
                 </div>
               </div>
               {/* Social Media, always showing with blue/clickable links if present */}
               <div>
-                <Label className="font-semibold">Social Media</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                   {userProfile.socialMedia?.twitter && (
                     <div>
@@ -307,9 +304,8 @@ export const UserProfile = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="info">Bio/Info</Label>
+                <Label htmlFor="info">Bio</Label>
                 <div className="flex items-start gap-2">
-                  <Info className="h-4 w-4 text-muted-foreground mt-2" />
                   <Textarea
                     id="info"
                     value={formData.info}
@@ -322,7 +318,6 @@ export const UserProfile = () => {
               <div className="space-y-2">
                 <Label htmlFor="address">Address</Label>
                 <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
                   <Input
                     id="address"
                     type="text"
@@ -333,7 +328,6 @@ export const UserProfile = () => {
                 </div>
               </div>
               <div className="space-y-4">
-                <Label>Social Media</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="twitter">Twitter</Label>
