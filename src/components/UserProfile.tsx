@@ -116,8 +116,9 @@ export const UserProfile = () => {
         {bgPhoto ? (
           <img
             src={bgPhoto}
-            className="w-full h-44 object-cover"
+            className="w-full h-44 object-cover object-center transition-all duration-300"
             alt="Background"
+            style={{ objectPosition: "center" }}
           />
         ) : (
           <div className="w-full h-44 bg-gradient-to-r from-primary/60 to-secondary/60"></div>
@@ -204,25 +205,69 @@ export const UserProfile = () => {
                     {userProfile.socialMedia?.twitter && (
                       <div>
                         <Label>Twitter</Label>
-                        <span className="block break-words">{userProfile.socialMedia.twitter}</span>
+                        <a
+                          href={
+                            userProfile.socialMedia.twitter.startsWith('http')
+                              ? userProfile.socialMedia.twitter
+                              : `https://twitter.com/${userProfile.socialMedia.twitter.replace(/^@/, '')}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block break-words text-blue-500 hover:underline"
+                        >
+                          {userProfile.socialMedia.twitter}
+                        </a>
                       </div>
                     )}
                     {userProfile.socialMedia?.linkedin && (
                       <div>
                         <Label>LinkedIn</Label>
-                        <span className="block break-words">{userProfile.socialMedia.linkedin}</span>
+                        <a
+                          href={
+                            userProfile.socialMedia.linkedin.startsWith('http')
+                              ? userProfile.socialMedia.linkedin
+                              : `https://linkedin.com/in/${userProfile.socialMedia.linkedin.replace(/^@/, '')}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block break-words text-blue-700 hover:underline"
+                        >
+                          {userProfile.socialMedia.linkedin}
+                        </a>
                       </div>
                     )}
                     {userProfile.socialMedia?.github && (
                       <div>
                         <Label>GitHub</Label>
-                        <span className="block break-words">{userProfile.socialMedia.github}</span>
+                        <a
+                          href={
+                            userProfile.socialMedia.github.startsWith('http')
+                              ? userProfile.socialMedia.github
+                              : `https://github.com/${userProfile.socialMedia.github.replace(/^@/, '')}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block break-words text-gray-700 hover:underline"
+                        >
+                          {userProfile.socialMedia.github}
+                        </a>
                       </div>
                     )}
                     {userProfile.socialMedia?.website && (
                       <div>
                         <Label>Website</Label>
-                        <span className="block break-words">{userProfile.socialMedia.website}</span>
+                        <a
+                          href={
+                            userProfile.socialMedia.website.startsWith('http')
+                              ? userProfile.socialMedia.website
+                              : `https://${userProfile.socialMedia.website}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block break-words text-green-700 hover:underline"
+                        >
+                          {userProfile.socialMedia.website}
+                        </a>
                       </div>
                     )}
                   </div>

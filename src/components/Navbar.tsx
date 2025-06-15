@@ -54,9 +54,7 @@ export function Navbar() {
         {/* Right Side Navigation Items */}
         <div className="hidden md:flex ml-auto items-center space-x-1">
           {user ? (
-            <>
-              <ProfileDropdown onLogout={handleLogout} />
-            </>
+            <ProfileDropdown onLogout={handleLogout} />
           ) : (
             <Link to="/login">
               <Button variant="outline">Sign In</Button>
@@ -88,9 +86,7 @@ export function Navbar() {
               </Button>
             </Link>
             {user ? (
-              <>
-                <ProfileDropdown onLogout={handleLogout} />
-              </>
+              <ProfileDropdown onLogout={handleLogout} />
             ) : (
               <Link to="/login" onClick={() => setIsMenuOpen(false)}>
                 <Button variant="outline" className="w-full">
