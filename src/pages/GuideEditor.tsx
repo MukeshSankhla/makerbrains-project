@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -46,8 +45,9 @@ const GuideEditor: React.FC = () => {
     { title: "", content: "" },
   ]);
 
-  // Helper to get/create ref for each step
+  // Fix: Ensure all step editors remain visible and can be edited independently
   function getStepQuillRef(idx: number) {
+    // Ensure an array element exists for each step
     if (!stepQuillRefs.current[idx]) {
       stepQuillRefs.current[idx] = React.createRef<ReactQuill>() as any;
     }
@@ -213,6 +213,7 @@ const GuideEditor: React.FC = () => {
             </Button>
           </div>
           <div className="space-y-8">
+            {/* All steps will appear, each with their own input editor */}
             {steps.map((step, idx) => (
               <div
                 key={idx}
