@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { updateUserProfile } from '@/services/firebaseUserService';
 import { useToast } from '@/hooks/use-toast';
-import { User as UserIcon, Mail, MapPin, Info, Edit, Shield } from 'lucide-react';
+import { User as UserIcon, Mail, Edit } from 'lucide-react';
 import { uploadProfilePhoto, uploadProfileBackground } from '@/services/firebaseUserService';
 
 export const UserProfile = () => {
@@ -111,42 +111,25 @@ export const UserProfile = () => {
   const fallbackInitial = userProfile.fullName?.charAt(0).toUpperCase() || userProfile.email?.charAt(0).toUpperCase() || '?';
 
   return (
-    <div className="max-w-2xl mx-auto pb-10 mt-10 space-y-8">
-      {/* Profile Card with improved layout */}
-      <div className="relative rounded-xl overflow-hidden bg-background shadow-lg">
-        {/* Background image or gradient */}
-        {bgPhoto ? (
-          <img
-            src={bgPhoto}
-            className="w-full h-52 object-cover object-center"
-            alt="Background"
-          />
-        ) : (
-          <div className="w-full h-52 bg-gradient-to-r from-primary/60 to-secondary/60" />
-        )}
-        {isEditing && (
-          <>
-            <button
-              type="button"
-              onClick={() => bgInputRef.current?.click()}
-              className="absolute top-3 right-3 bg-background/90 p-2 rounded-full shadow hover:bg-primary/90 transition-colors z-10"
-            >
-              <Edit className="h-5 w-5 text-primary" />
-            </button>
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              ref={bgInputRef}
-              onChange={handleBgPhotoChange}
+    <div className="max-w-2xl mx-auto pb-10 mt-10 space-y-8 relative">
+      {/* Cover/Background Image */}
+      <div className="relative w-full mb-16">
+        <div className="rounded-2xl overflow-hidden w-full h-52">
+          {bgPhoto ? (
+            <img
+              src={bgPhoto}
+              className="w-full h-52 object-cover object-center"
+              alt="Background"
             />
-          </>
-        )}
-        {/* Avatar positioned to overlap header, slightly elevated */}
-        <div className="absolute left-1/2 top-40 -translate-x-1/2 translate-y-1/2 z-10">
+          ) : (
+            <div className="w-full h-52 bg-gradient-to-r from-blue-700 to-green-600" />
+          )}
+        </div>
+        {/* Profile picture avatar, absolutely positioned overlapping bottom of the cover */}
+        <div className="absolute left-1/2 -bottom-12 -translate-x-1/2 z-20">
           <div className="relative">
-            <Avatar className="w-32 h-32 border-4 border-background shadow-lg bg-background">
-              <AvatarImage src={profilePhoto || undefined} alt={userProfile.fullName || 'Avatar'} />
+            <Avatar className="w-32 h-32 border-4 border-background shadow-lg">
+              <AvatarImage src={profilePhoto} alt={userProfile.fullName || 'Avatar'} />
               <AvatarFallback>
                 <UserIcon className="w-10 h-10 text-muted-foreground" />
                 <span className="sr-only">{fallbackInitial}</span>
@@ -172,24 +155,36 @@ export const UserProfile = () => {
             )}
           </div>
         </div>
+        {isEditing && (
+          <>
+            <button
+              type="button"
+              onClick={() => bgInputRef.current?.click()}
+              className="absolute top-3 right-3 bg-background/90 p-2 rounded-full shadow hover:bg-primary/90 transition-colors z-10"
+            >
+              <Edit className="h-5 w-5 text-primary" />
+            </button>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              ref={bgInputRef}
+              onChange={handleBgPhotoChange}
+            />
+          </>
+        )}
       </div>
 
-      {/* Main Card for content */}
-      <Card className="overflow-visible shadow-md">
-        <CardHeader className="relative flex flex-col items-center pt-20 pb-4">
+      {/* Profile Card below background and avatar */}
+      <Card className="overflow-visible shadow-md pt-16">
+        <CardHeader className="flex flex-col items-center pt-0 pb-4 relative">
           <h2 className="text-3xl font-bold text-foreground text-center">{userProfile.fullName || "No Name Set"}</h2>
           <div className="flex flex-col gap-1 mt-2 items-center">
             <span className="flex items-center text-muted-foreground gap-2 text-base">
               <Mail className="w-4 h-4" />
               {userProfile.email}
             </span>
-            {/* Admins see role */}
-            {isAdmin && (
-              <div className="flex items-center gap-2 mt-2 bg-blue-50 text-blue-700 px-2 py-1 rounded">
-                <Shield className="w-4 h-4" /> <span className="font-mono text-xs">Role:</span>
-                <span className="font-bold capitalize">{userProfile.role}</span>
-              </div>
-            )}
+            {/* Role badge removed */}
           </div>
         </CardHeader>
         <CardContent className="pt-2 pb-8 px-5 md:px-10 bg-background rounded-b-xl">
@@ -207,7 +202,7 @@ export const UserProfile = () => {
                   <span>{userProfile.address || <span className="text-muted-foreground italic">No address</span>}</span>
                 </div>
               </div>
-              {/* Social Media, always showing with blue/clickable links if present */}
+              {/* Social Media */}
               <div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                   {userProfile.socialMedia?.twitter && (
