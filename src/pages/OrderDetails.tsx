@@ -138,6 +138,28 @@ export default function OrderDetails() {
           ))}
         </ul>
         <div className="font-bold mt-2">Total: {format(order.totalAmount)}</div>
+        {/* Admin comment & tracking if set */}
+        {(order.adminComment || order.trackingId || order.trackingUrl) && (
+          <div className="mt-4 p-3 border rounded bg-muted">
+            {order.adminComment && (
+              <div className="mb-2">
+                <b>Message from Admin:</b>
+                <div className="text-sm whitespace-pre-line">{order.adminComment}</div>
+              </div>
+            )}
+            {(order.trackingId || order.trackingUrl) && (
+              <div>
+                <b>Tracking:</b>{" "}
+                {order.trackingId && <span className="mr-2">{order.trackingId}</span>}
+                {order.trackingUrl && (
+                  <a href={order.trackingUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    Track Package
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
       <Button asChild variant="outline">
         <Link to="/orders">Back to Orders</Link>

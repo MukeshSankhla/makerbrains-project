@@ -1,11 +1,14 @@
+
 import { useEffect, useState } from "react";
 import { db } from "@/config/firebase";
-import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
+import { collection, getDocs, updateDoc, doc, deleteDoc } from "firebase/firestore";
 import { Order } from "@/types/shop";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useCurrency } from "@/hooks/useCurrency";
+import { OrderAdminDialog } from "./OrderAdminDialog";
+import { Trash2, MessageSquare, Link as LinkIcon, Package as PackageIcon } from "lucide-react";
 
 const statusLabels: Record<Order["status"], string> = {
   pending: "Pending",
@@ -35,6 +38,7 @@ export default function AdminOrderTable() {
     fetchOrders();
   }, []);
 
+  // Order status update handler
   const handleStatusChange = async (orderId: string, status: Order["status"], email: string) => {
     setUpdating(orderId);
     await updateDoc(doc(db, "orders", orderId), { status });
@@ -48,7 +52,6 @@ export default function AdminOrderTable() {
         body: JSON.stringify({ orderId, status, email })
       });
     } catch (e) {
-      // Log email sending error (for now)
       console.error("Failed to trigger order email send:", e);
     }
 
@@ -56,6 +59,34 @@ export default function AdminOrderTable() {
       title: "Order updated",
       description: `Order ${orderId.slice(-6).toUpperCase()} set to ${status}`,
       variant: status === "cancelled" ? "destructive" : "default"
+    });
+    setUpdating(null);
+  };
+
+  // Delete order with confirmation
+  const handleDelete = async (orderId: string) => {
+    if (!window.confirm("Are you sure you want to delete this order? This cannot be undone.")) return;
+    await deleteDoc(doc(db, "orders", orderId));
+    setOrders(orders => orders.filter(o => o.id !== orderId));
+    toast({
+      title: "Order deleted",
+      description: `Order ${orderId.slice(-6).toUpperCase()} has been deleted.`,
+      variant: "destructive"
+    });
+  };
+
+  // Update comment and tracking
+  const handleAdminOrderUpdate = async (
+    orderId: string,
+    updates: { adminComment: string; trackingUrl: string; trackingId: string }
+  ) => {
+    setUpdating(orderId);
+    await updateDoc(doc(db, "orders", orderId), updates);
+    setOrders(orders => orders.map(o => o.id === orderId ? { ...o, ...updates } : o));
+    toast({
+      title: "Order updated",
+      description: "Details saved.",
+      variant: "default"
     });
     setUpdating(null);
   };
@@ -73,6 +104,7 @@ export default function AdminOrderTable() {
               <th className="p-2">Amount</th>
               <th className="p-2">Status</th>
               <th className="p-2">Change Status</th>
+              <th className="p-2">Admin Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -99,6 +131,39 @@ export default function AdminOrderTable() {
                     <option value="completed">Completed</option>
                     <option value="cancelled">Cancelled</option>
                   </select>
+                </td>
+                <td className="p-2 flex gap-2 items-center">
+                  {/* Comment + Tracking Editor */}
+                  <OrderAdminDialog
+                    trigger={
+                      <Button size="icon" variant="secondary" title="Edit Comment/Tracking" className="text-blue-600">
+                        <MessageSquare className="w-4 h-4" />
+                      </Button>
+                    }
+                    currentComment={order.adminComment}
+                    currentTrackingId={order.trackingId}
+                    currentTrackingUrl={order.trackingUrl}
+                    onSave={fields =>
+                      handleAdminOrderUpdate(order.id, fields)
+                    }
+                  />
+                  {/* Show tracking url (if set) */}
+                  {order.trackingUrl && (
+                    <a href={order.trackingUrl} target="_blank" rel="noopener noreferrer" title="Tracking URL">
+                      <LinkIcon className="w-4 h-4 text-emerald-600" />
+                    </a>
+                  )}
+                  {/* Delete */}
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    title="Delete Order"
+                    className="text-red-600"
+                    onClick={() => handleDelete(order.id)}
+                    disabled={updating === order.id}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </td>
               </tr>
             ))}

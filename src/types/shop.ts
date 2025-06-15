@@ -33,5 +33,8 @@ export type Order = {
   createdAt: number;
   email?: string;
   addressId?: string;
-  shippingAddress?: Omit<import("./address").Address, "id" | "userId" | "createdAt" | "updatedAt">; // [NEW] store address snapshot
+  shippingAddress?: Omit<import("./address").Address, "id" | "userId" | "createdAt" | "updatedAt">;
+  trackingId?: string;           // [NEW] for shipment tracking
+  trackingUrl?: string;          // [NEW] for shipment tracking link
+  adminComment?: string;         // [NEW] for admin-user communication
 };
