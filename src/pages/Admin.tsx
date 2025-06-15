@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Header from "@/components/Header";
 import { Book, User, BarChart, Plus, Edit, Eye, ListCheck, Package } from "lucide-react";
 import AdminOrderTable from "@/components/AdminOrderTable";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Admin = () => {
   const [newProject, setNewProject] = useState({
@@ -50,9 +51,11 @@ const Admin = () => {
             <h1 className="text-3xl font-bold">Admin Dashboard</h1>
             <p className="text-muted-foreground">Manage your MakerBrains platform</p>
           </div>
-          <Button onClick={() => navigate('/create')}>
-            <Plus className="h-4 w-4 mr-2" />
-            New Project
+          <Button asChild>
+            <Link to="/admin-panel">
+              <Plus className="h-4 w-4 mr-2" />
+              Admin Panel
+            </Link>
           </Button>
         </div>
 
@@ -69,10 +72,11 @@ const Admin = () => {
               </CardContent>
             </Card>
           ))}
-          {/* ADMIN: Add Order Management Quick Access */}
+          {/* ADMIN: Add Order Management Quick Access, now links to admin-panel orders */}
           <Card
+            as="a"
+            href="/admin-panel#orders"
             className="cursor-pointer transition-shadow hover:shadow-lg bg-primary text-primary-foreground"
-            onClick={() => navigate('/admin-orders')}
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium flex items-center">
@@ -101,163 +105,57 @@ const Admin = () => {
             </TabsTrigger>
             <TabsTrigger value="create">Create Project</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            {/* Extra: Add main Admin Panel link directly */}
+            <TabsTrigger value="admin-panel">
+              <Link to="/admin-panel" className="flex items-center gap-1">
+                Admin Panel
+              </Link>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="projects">
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Projects</CardTitle>
-                <CardDescription>Manage your published and draft projects</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {recentProjects.map((project) => (
-                    <div key={project.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <h3 className="font-medium">{project.title}</h3>
-                        <p className="text-sm text-muted-foreground">by {project.author}</p>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <Badge variant={project.status === 'Published' ? 'default' : 'secondary'}>
-                          {project.status}
-                        </Badge>
-                        <span className="text-sm text-muted-foreground">{project.views} views</span>
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="outline">
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                          <Button size="sm" variant="outline">
-                            <Eye className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            {/* Replace in-page project management content with a button to the admin-panel section */}
+            <div className="flex justify-center items-center min-h-[180px]">
+              <Button asChild variant="outline">
+                <Link to="/admin-panel#projects">
+                  Go to Project Management in Admin Panel
+                </Link>
+              </Button>
+            </div>
           </TabsContent>
           <TabsContent value="create">
-            <Card>
-              <CardHeader>
-                <CardTitle>Create New Project</CardTitle>
-                <CardDescription>Add a new tutorial or project to your platform</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleCreateProject} className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Project Title</label>
-                    <Input
-                      placeholder="Enter project title"
-                      value={newProject.title}
-                      onChange={(e) => setNewProject({...newProject, title: e.target.value})}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Description</label>
-                    <Textarea
-                      placeholder="Describe your project"
-                      value={newProject.description}
-                      onChange={(e) => setNewProject({...newProject, description: e.target.value})}
-                    />
-                  </div>
-                  
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Category</label>
-                      <Select value={newProject.category} onValueChange={(value) => setNewProject({...newProject, category: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="electronics">Electronics</SelectItem>
-                          <SelectItem value="iot">IoT</SelectItem>
-                          <SelectItem value="robotics">Robotics</SelectItem>
-                          <SelectItem value="software">Software</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Difficulty</label>
-                      <Select value={newProject.difficulty} onValueChange={(value) => setNewProject({...newProject, difficulty: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select difficulty" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="beginner">Beginner</SelectItem>
-                          <SelectItem value="intermediate">Intermediate</SelectItem>
-                          <SelectItem value="advanced">Advanced</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Tags</label>
-                    <Input
-                      placeholder="Enter tags separated by commas"
-                      value={newProject.tags}
-                      onChange={(e) => setNewProject({...newProject, tags: e.target.value})}
-                    />
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <Button type="submit">Create Project</Button>
-                    <Button type="button" variant="outline">Save as Draft</Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
+            <div className="flex justify-center items-center min-h-[180px]">
+              <Button asChild>
+                <Link to="/admin-panel#projects">
+                  Go to Create Project in Admin Panel
+                </Link>
+              </Button>
+            </div>
           </TabsContent>
 
           <TabsContent value="orders">
             <div className="mb-4">
-              <Button onClick={() => navigate('/admin-orders')} variant="outline" className="mb-2">
-                <ListCheck className="h-4 w-4 mr-2" />
-                Go to Order Management
+              <Button asChild variant="outline" className="mb-2">
+                <Link to="/admin-panel#orders">
+                  <ListCheck className="h-4 w-4 mr-2" />
+                  Go to Order Management in Admin Panel
+                </Link>
               </Button>
             </div>
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  <ListCheck className="inline mr-2 h-5 w-5" />
-                  Order Management
-                </CardTitle>
-                <CardDescription>View and update all orders</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <AdminOrderTable />
-              </CardContent>
-            </Card>
           </TabsContent>
-
           <TabsContent value="users">
-            <Card>
-              <CardHeader>
-                <CardTitle>User Management</CardTitle>
-                <CardDescription>Manage registered users and their permissions</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8 text-muted-foreground">
-                  User management interface would go here
-                </div>
-              </CardContent>
-            </Card>
+            <div className="flex justify-center items-center min-h-[180px]">
+              <Button asChild variant="outline">
+                <Link to="/admin-panel#users">
+                  Go to User Management in Admin Panel
+                </Link>
+              </Button>
+            </div>
           </TabsContent>
           <TabsContent value="analytics">
-            <Card>
-              <CardHeader>
-                <CardTitle>Analytics Overview</CardTitle>
-                <CardDescription>Track platform performance and user engagement</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8 text-muted-foreground">
-                  Analytics charts and metrics would go here
-                </div>
-              </CardContent>
-            </Card>
+            <div className="flex justify-center items-center min-h-[180px] text-muted-foreground">
+              Analytics charts and metrics would go here
+            </div>
           </TabsContent>
         </Tabs>
       </div>
@@ -266,3 +164,4 @@ const Admin = () => {
 };
 
 export default Admin;
+
