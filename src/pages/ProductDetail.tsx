@@ -15,16 +15,23 @@ export default function ProductDetail() {
   useEffect(() => {
     if (!id) return;
     const fetchProduct = async () => {
+      console.log("Fetching product with id:", id);
       const snap = await getDocs(collection(db, "products"));
-      const found = snap.docs.map(doc => doc.data()).find(p => p.id === id);
-      setProduct(found);
+      const found = snap.docs.map(doc => doc.data()).find(p => String(p.id) === String(id));
+      console.log("Fetched product:", found);
+      setProduct(found ?? null);
       setLoading(false);
     };
     fetchProduct();
   }, [id]);
 
   if (loading) return <div>Loading...</div>;
-  if (!product) return <div>Product not found</div>;
+  if (!product)
+    return (
+      <div className="p-8">
+        <div className="text-red-600 font-semibold">Product not found for id: {id}</div>
+      </div>
+    );
 
   return (
     <div className="max-w-2xl mx-auto py-10 px-2 bg-background shadow rounded">

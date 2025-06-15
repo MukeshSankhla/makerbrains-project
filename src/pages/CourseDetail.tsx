@@ -17,9 +17,11 @@ export default function CourseDetail() {
   useEffect(() => {
     if (!id) return;
     const fetchCourse = async () => {
+      console.log("Fetching course with id:", id);
       const snap = await getDocs(collection(db, "courses"));
-      const found = snap.docs.map(doc => doc.data()).find(c => c.id === id);
-      setCourse(found);
+      const found = snap.docs.map(doc => doc.data()).find(c => String(c.id) === String(id));
+      console.log("Fetched course:", found);
+      setCourse(found ?? null);
       setLoading(false);
     };
     fetchCourse();
@@ -51,7 +53,12 @@ export default function CourseDetail() {
   };
 
   if (loading) return <div>Loading...</div>;
-  if (!course) return <div>Course not found</div>;
+  if (!course)
+    return (
+      <div className="p-8">
+        <div className="text-red-600 font-semibold">Course not found for id: {id}</div>
+      </div>
+    );
 
   return (
     <div className="max-w-2xl mx-auto py-10 px-2 bg-background shadow rounded">
