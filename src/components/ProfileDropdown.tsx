@@ -46,7 +46,14 @@ export function ProfileDropdown({ onLogout }: { onLogout: () => void }) {
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="flex items-center gap-2 text-destructive" onClick={onLogout}>
+        <DropdownMenuItem className="flex items-center gap-2 text-destructive"
+          onSelect={(e) => {
+            e.preventDefault();
+            onLogout();
+          }}
+          role="button"
+          tabIndex={0}
+        >
           <LogOut className="h-4 w-4" />
           Logout
         </DropdownMenuItem>

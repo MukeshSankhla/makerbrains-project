@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
@@ -13,7 +14,7 @@ import { ProfileDropdown } from "./ProfileDropdown";
 import { useCart } from "@/hooks/useCart";
 
 export function Navbar() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { cart } = useCart();
   const location = useLocation();
@@ -22,8 +23,9 @@ export function Navbar() {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  // Make sure logout properly closes menu & logs out
   const handleLogout = async () => {
-    await (useAuth().logout());
+    await logout();
     setIsMenuOpen(false);
   };
 

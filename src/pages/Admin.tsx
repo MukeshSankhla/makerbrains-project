@@ -71,18 +71,18 @@ const Admin = () => {
           ))}
           {/* ADMIN: Add Order Management Quick Access */}
           <Card
-            className="cursor-pointer transition-shadow hover:shadow-lg"
+            className="cursor-pointer transition-shadow hover:shadow-lg bg-primary text-primary-foreground"
             onClick={() => navigate('/admin-orders')}
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium flex items-center">
-                <Package className="h-4 w-4 mr-2 text-primary" />
+                <Package className="h-4 w-4 mr-2 text-white" />
                 Order Management
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-base font-semibold text-muted-foreground">
-                View &amp; manage orders
+              <div className="text-base font-semibold">
+                View &amp; update orders
               </div>
             </CardContent>
           </Card>
