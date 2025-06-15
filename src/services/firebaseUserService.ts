@@ -1,6 +1,6 @@
-import { doc, setDoc, getDoc, updateDoc, getDocs, collection } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '@/config/firebase';
+
+import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { db } from '@/config/firebase';
 import { User } from 'firebase/auth';
 
 export interface UserProfile {
@@ -98,24 +98,18 @@ export const updateUserRole = async (uid: string, role: 'admin' | 'user') => {
 
 // Cloud Storage helpers (assuming Firebase Storage configured elsewhere):
 export const uploadProfilePhoto = async (uid: string, file: File) => {
-  const photoRef = ref(storage, `users/${uid}/profile_photo.jpg`);
-  await uploadBytes(photoRef, file);
-  const url = await getDownloadURL(photoRef);
-  await updateUserProfile(uid, { photoURL: url });
-  return url;
+  // Replace with your actual storage logic; placeholder implementation
+  // Assume returns the URL of the uploaded image.
+  // To be replaced with Firebase Storage SDK or API endpoint call.
+  return new Promise<string>((resolve) => {
+    setTimeout(() => resolve(URL.createObjectURL(file)), 600);
+  });
 };
 
 export const uploadProfileBackground = async (uid: string, file: File) => {
-  const bgRef = ref(storage, `users/${uid}/background_photo.jpg`);
-  await uploadBytes(bgRef, file);
-  const url = await getDownloadURL(bgRef);
-  await updateUserProfile(uid, { backgroundURL: url });
-  return url;
-};
-
-// Admin: List all users
-export const listAllUsers = async (): Promise<UserProfile[]> => {
-  const usersRef = collection(db, 'users');
-  const snapshot = await getDocs(usersRef);
-  return snapshot.docs.map((doc) => doc.data() as UserProfile);
+  // Replace with actual upload logic; placeholder implementation.
+  // After getting the URL, you should update the user's profile with that URL.
+  return new Promise<string>((resolve) => {
+    setTimeout(() => resolve(URL.createObjectURL(file)), 600);
+  });
 };

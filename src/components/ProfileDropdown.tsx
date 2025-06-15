@@ -33,9 +33,9 @@ export function ProfileDropdown({ onLogout }: { onLogout: () => void }) {
         </DropdownMenuItem>
         {isAdmin && (
           <DropdownMenuItem asChild>
-            <Link to="/user-management" className="flex items-center gap-2">
+            <Link to="/admin" className="flex items-center gap-2">
               <Shield className="h-4 w-4" />
-              User Management
+              Admin Panel
             </Link>
           </DropdownMenuItem>
         )}
