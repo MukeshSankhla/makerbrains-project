@@ -1,4 +1,3 @@
-
 export type Product = {
   id: string;
   title: string;
@@ -24,6 +23,8 @@ export type CartItem =
   | (Product & { quantity: number })
   | (Course & { quantity: number });
 
+import type { Address } from "./address";
+
 export type Order = {
   id: string;
   userId: string;
@@ -33,4 +34,5 @@ export type Order = {
   status: "pending" | "shipped" | "completed" | "cancelled";
   createdAt: number;
   email?: string;
+  address?: Address;
 };

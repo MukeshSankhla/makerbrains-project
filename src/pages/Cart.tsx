@@ -9,6 +9,8 @@ import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { ShoppingCart, ShoppingBag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import AddressSelectModal from "@/components/AddressSelectModal";
+import useAddressBook from "@/hooks/useAddressBook";
 
 export default function Cart() {
   const { cart, removeItem, clearCart, addItem } = useCart();
@@ -17,6 +19,9 @@ export default function Cart() {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const { addresses } = useAddressBook();
 
   // Single cart totals calculation
   const subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
@@ -33,6 +38,10 @@ export default function Cart() {
       return;
     }
     if (!cart.length) return;
+    if (!selectedAddress) {
+      setShowAddressModal(true);
+      return;
+    }
 
     setLoading(true);
 
@@ -44,6 +53,7 @@ export default function Cart() {
       status: "pending",
       createdAt: Date.now(),
       email: user.email || "",
+      address: selectedAddress,
     };
 
     try {
@@ -222,6 +232,14 @@ export default function Cart() {
           </div>
         </div>
       )}
+      <AddressSelectModal
+        open={showAddressModal}
+        onClose={() => setShowAddressModal(false)}
+        onSelect={addr => {
+          setSelectedAddress(addr);
+          setShowAddressModal(false);
+        }}
+      />
     </div>
   );
 }

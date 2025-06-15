@@ -35,6 +35,8 @@ import ManageMagazines from "./pages/ManageMagazines";
 import ManageSponsors from "./pages/ManageSponsors";
 import Contact from "./pages/ContactUs";
 import UserManagement from "./pages/UserManagement";
+import AddressBook from "@/pages/AddressBook";
+import OrderDetails from "@/pages/OrderDetails";
 
 const queryClient = new QueryClient();
 
@@ -168,6 +170,8 @@ const App = () => (
                             <UserManagement />
                           </ProtectedRoute>
                         } />
+                        <Route path="/address-book" element={<AddressBook />} />
+                        <Route path="/orders/:orderId" element={<OrderDetails />} />
                         {/* Redirect old admin routes */}
                         <Route path="/maker-admin-access" element={<Navigate to="/login" />} />
                         <Route path="/admin-login" element={<Navigate to="/login" />} />
