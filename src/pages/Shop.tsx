@@ -5,12 +5,10 @@ import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/hooks/useCart";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/config/firebase";
-import { useNavigate } from "react-router-dom";
 
 export default function Shop() {
   const [products, setProducts] = useState<Product[]>([]);
   const { addItem } = useCart();
-  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch products from Firestore
@@ -26,19 +24,11 @@ export default function Shop() {
       <h1 className="text-2xl font-bold mb-4">Shop</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {products.map((p) => (
-          <div
+          <ProductCard
             key={p.id}
-            onClick={() => navigate(`/product/${p.id}`)}
-            className="cursor-pointer"
-          >
-            <ProductCard
-              item={p}
-              onAddToCart={() => {
-                // no parameter, just add item
-                addItem({ ...p, quantity: 1 });
-              }}
-            />
-          </div>
+            item={p}
+            onAddToCart={() => addItem({ ...p, quantity: 1 })}
+          />
         ))}
       </div>
     </div>

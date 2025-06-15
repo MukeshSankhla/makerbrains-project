@@ -1,3 +1,4 @@
+
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { User } from 'firebase/auth';
@@ -20,7 +21,6 @@ export interface UserProfile {
   role: 'admin' | 'user';
   createdAt: Date;
   updatedAt: Date;
-  purchasedCourses?: string[]; // <-- ADDED HERE
 }
 
 // Helper: auto-generate fallback username (if needed)
@@ -57,7 +57,6 @@ export const createUserProfile = async (user: User, additionalData: Partial<User
       role: defaultRole,
       createdAt: new Date(),
       updatedAt: new Date(),
-      purchasedCourses: [], // <-- ADDED
       ...additionalData,
     };
 
