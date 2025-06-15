@@ -50,7 +50,7 @@ export default function Cart() {
       toast({
         title: "Order placed!",
         description: "Thank you for shopping with us. (Payment simulated for now)",
-        variant: "success",
+        variant: "default", // CHANGED from "success" to "default"
       });
     } catch {
       toast({
