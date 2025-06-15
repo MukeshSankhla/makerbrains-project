@@ -21,7 +21,11 @@ export default function CourseShop() {
   useEffect(() => {
     const fetchCourses = async () => {
       const snap = await getDocs(collection(db, "courses"));
-      const fetchedCourses = snap.docs.map((doc) => doc.data() as Course);
+      // Ensure each Course gets its id from Firestore doc.id
+      const fetchedCourses = snap.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id
+      })) as Course[];
       setCourses(fetchedCourses);
       console.log("Fetched courses:", fetchedCourses.map(c => c.id));
     };
