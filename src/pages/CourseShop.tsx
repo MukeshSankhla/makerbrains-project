@@ -21,7 +21,9 @@ export default function CourseShop() {
   useEffect(() => {
     const fetchCourses = async () => {
       const snap = await getDocs(collection(db, "courses"));
-      setCourses(snap.docs.map((doc) => doc.data() as Course));
+      const fetchedCourses = snap.docs.map((doc) => doc.data() as Course);
+      setCourses(fetchedCourses);
+      console.log("Fetched courses:", fetchedCourses.map(c => c.id));
     };
     fetchCourses();
   }, []);
@@ -45,9 +47,12 @@ export default function CourseShop() {
       const owned = new Set<string>();
       userOrders.forEach((order) => {
         order.items.forEach((item) => {
-          if (item.type === "course") owned.add(item.id);
+          // Defensive: log each item for inspection
+          console.log("Order item:", item);
+          if (item.type === "course" && item.id) owned.add(item.id);
         });
       });
+      console.log("Purchased course IDs found in orders:", [...owned]);
       setPurchasedCourses([...owned]);
     };
     fetchOrders();
@@ -79,7 +84,7 @@ export default function CourseShop() {
         items: [{ ...course, quantity: 1 }],
         totalAmount: course.price,
         paymentProvider: "stripe", // Or change as needed
-        status: "completed", // For demonstration; change as needed after payment integration
+        status: "completed",
         createdAt: Date.now(),
         email: user.email || "",
       };
@@ -124,3 +129,4 @@ export default function CourseShop() {
     </div>
   );
 }
+
