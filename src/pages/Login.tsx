@@ -13,23 +13,24 @@ import { useAuth } from "@/contexts/AuthContext";
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState(""); // NEW: for the full name field
   const [password, setPassword] = useState("");
   const [resetEmail, setResetEmail] = useState("");
   const [showResetForm, setShowResetForm] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const { signInWithEmail, signUpWithEmail, signInWithGoogle, signInWithGithub, resetPassword } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       if (isLogin) {
         await signInWithEmail(email, password);
       } else {
-        await signUpWithEmail(email, password);
+        await signUpWithEmail(email, password, fullName); // Pass name
       }
       navigate('/');
     } catch (error) {
@@ -77,7 +78,7 @@ const Login = () => {
   if (showResetForm) {
     return (
       <div className="min-h-screen bg-background">
-        
+
         <div className="flex items-center justify-center py-12 px-4">
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
@@ -86,7 +87,7 @@ const Login = () => {
                 Enter your email address to receive a password reset link
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent>
               <form onSubmit={handlePasswordReset} className="space-y-4">
                 <div className="space-y-2">
@@ -100,14 +101,14 @@ const Login = () => {
                     required
                   />
                 </div>
-                
+
                 <Button type="submit" className="w-full">
                   Send Reset Link
                 </Button>
-                
-                <Button 
-                  type="button" 
-                  variant="ghost" 
+
+                <Button
+                  type="button"
+                  variant="ghost"
                   className="w-full"
                   onClick={() => setShowResetForm(false)}
                 >
@@ -130,15 +131,29 @@ const Login = () => {
               {isLogin ? "Welcome Back" : "Join MakerBrains"}
             </CardTitle>
             <CardDescription>
-              {isLogin 
-                ? "Sign in to your account to continue learning" 
+              {isLogin
+                ? "Sign in to your account to continue learning"
                 : "Create an account to start your maker journey"
               }
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {!isLogin && (
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Full Name</Label>
+                  <Input
+                    id="fullName"
+                    type="text"
+                    placeholder="Enter your full name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required={!isLogin}
+                  />
+                </div>
+              )}
+              
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -150,7 +165,7 @@ const Login = () => {
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <Input
@@ -162,7 +177,7 @@ const Login = () => {
                   required
                 />
               </div>
-              
+
               {isLogin && (
                 <div className="text-right">
                   <button
@@ -174,20 +189,20 @@ const Login = () => {
                   </button>
                 </div>
               )}
-              
+
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Loading..." : isLogin ? "Sign In" : "Create Account"}
               </Button>
             </form>
-            
+
             <div className="mt-6">
               <Separator className="my-4" />
               <div className="text-center text-sm text-muted-foreground">
                 Or continue with
               </div>
               <div className="mt-4 space-y-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full"
                   onClick={handleGoogleSignIn}
                   disabled={loading}
@@ -195,8 +210,8 @@ const Login = () => {
                   <FcGoogle className="mr-2 h-4 w-4" />
                   Continue with Google
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full"
                   onClick={handleGithubSignIn}
                   disabled={loading}
@@ -206,7 +221,7 @@ const Login = () => {
                 </Button>
               </div>
             </div>
-            
+
             <div className="mt-6 text-center text-sm">
               {isLogin ? "Don't have an account? " : "Already have an account? "}
               <button
@@ -225,3 +240,6 @@ const Login = () => {
 };
 
 export default Login;
+
+// NOTE: This file is now getting long (over 228 lines). Consider splitting it into smaller components for maintainability after review.
+

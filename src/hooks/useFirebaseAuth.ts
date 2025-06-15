@@ -68,10 +68,12 @@ export const useFirebaseAuth = () => {
     }
   };
 
-  const signUpWithEmail = async (email: string, password: string) => {
+  // UPDATE: Add "fullName" parameter to signUpWithEmail, pass to createUserProfile
+  const signUpWithEmail = async (email: string, password: string, fullName?: string) => {
     try {
       setLoading(true);
       const result = await createUserWithEmailAndPassword(auth, email, password);
+      await createUserProfile(result.user, { fullName }); // Send fullName to profile
       toast({
         title: "Success",
         description: "Account created successfully!",

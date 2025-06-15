@@ -23,6 +23,12 @@ export interface UserProfile {
   updatedAt: Date;
 }
 
+// Helper: auto-generate fallback username (if needed)
+function generateUserName(email: string) {
+  const base = email.split('@')[0];
+  return `${base}_${Math.floor(Math.random() * 10000) + 1}`;
+}
+
 export const createUserProfile = async (user: User, additionalData: Partial<UserProfile> = {}) => {
   const userRef = doc(db, 'users', user.uid);
   const userSnapshot = await getDoc(userRef);
@@ -31,10 +37,17 @@ export const createUserProfile = async (user: User, additionalData: Partial<User
     const { displayName, email, photoURL } = user;
     const defaultRole = email === 'admin@makerbrains.com' ? 'admin' : 'user'; // You can modify this logic
     
+    let fullName = additionalData.fullName?.trim() || displayName || '';
+
+    // Fallback if no name given
+    if (!fullName && email) {
+      fullName = generateUserName(email);
+    }
+
     const userProfile: UserProfile = {
       uid: user.uid,
       email: email || '',
-      fullName: displayName || '',
+      fullName,
       displayName,
       photoURL,
       backgroundURL: '', // set empty by default
@@ -63,7 +76,7 @@ export const getUserProfile = async (uid: string): Promise<UserProfile | null> =
   try {
     const userRef = doc(db, 'users', uid);
     const userSnapshot = await getDoc(userRef);
-    
+
     if (userSnapshot.exists()) {
       return userSnapshot.data() as UserProfile;
     }
@@ -98,17 +111,12 @@ export const updateUserRole = async (uid: string, role: 'admin' | 'user') => {
 
 // Cloud Storage helpers (assuming Firebase Storage configured elsewhere):
 export const uploadProfilePhoto = async (uid: string, file: File) => {
-  // Replace with your actual storage logic; placeholder implementation
-  // Assume returns the URL of the uploaded image.
-  // To be replaced with Firebase Storage SDK or API endpoint call.
   return new Promise<string>((resolve) => {
     setTimeout(() => resolve(URL.createObjectURL(file)), 600);
   });
 };
 
 export const uploadProfileBackground = async (uid: string, file: File) => {
-  // Replace with actual upload logic; placeholder implementation.
-  // After getting the URL, you should update the user's profile with that URL.
   return new Promise<string>((resolve) => {
     setTimeout(() => resolve(URL.createObjectURL(file)), 600);
   });
