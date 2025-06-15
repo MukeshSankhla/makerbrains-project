@@ -7,8 +7,25 @@ export function Footer() {
     <footer className="border-t py-8 border-border">
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-muted-foreground flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4">
             <span>© Maker Brains | {new Date().getFullYear()}</span>
+            {/* Add legal links */}
+            <div className="flex space-x-4">
+              <Link
+                to="/legal"
+                className="hover:underline text-primary transition-colors"
+                aria-label="Legal"
+              >
+                Legal
+              </Link>
+              <Link
+                to="/legal"
+                className="hover:underline text-primary transition-colors"
+                aria-label="Terms and Conditions"
+              >
+                Terms &amp; Conditions
+              </Link>
+            </div>
           </div>
           <div className="flex space-x-6">
             <a href="https://www.youtube.com/@makerbrains" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="transition-transform hover:scale-110">
@@ -32,3 +49,4 @@ export function Footer() {
     </footer>
   );
 }
+
