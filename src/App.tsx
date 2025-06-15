@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -32,6 +31,7 @@ import ManageRecognitions from "./pages/ManageRecognitions";
 import ManageMagazines from "./pages/ManageMagazines";
 import ManageSponsors from "./pages/ManageSponsors";
 import Contact from "./pages/ContactUs";
+import UserManagement from "./pages/UserManagement";
 
 const queryClient = new QueryClient();
 
@@ -143,6 +143,11 @@ const App = () => (
                         <Route path="/manage-sponsors" element={
                           <ProtectedRoute>
                             <ManageSponsors />
+                          </ProtectedRoute>
+                        } />
+                        <Route path="/user-management" element={
+                          <ProtectedRoute>
+                            <UserManagement />
                           </ProtectedRoute>
                         } />
                         {/* Redirect old admin routes */}

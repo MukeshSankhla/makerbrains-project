@@ -1,3 +1,4 @@
+
 import { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,11 +9,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { updateUserProfile } from '@/services/firebaseUserService';
 import { useToast } from '@/hooks/use-toast';
-import { User as UserIcon, Mail, MapPin, Info, Edit } from 'lucide-react';
+import { User as UserIcon, Mail, MapPin, Info, Edit, Shield } from 'lucide-react';
 import { uploadProfilePhoto, uploadProfileBackground } from '@/services/firebaseUserService';
 
 export const UserProfile = () => {
-  const { user, userProfile } = useAuth();
+  const { user, userProfile, isAdmin } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -111,16 +112,16 @@ export const UserProfile = () => {
   const fallbackInitial = userProfile.fullName?.charAt(0).toUpperCase() || userProfile.email?.charAt(0).toUpperCase() || '?';
 
   return (
-    <div className="max-w-2xl mx-auto pb-10 space-y-6">
-      <div className="relative rounded-lg overflow-hidden">
+    <div className="max-w-xl mx-auto pb-10 space-y-8">
+      <div className="relative rounded-lg overflow-hidden shadow bg-background">
         {bgPhoto ? (
           <img
             src={bgPhoto}
-            className="w-full h-44 object-cover"
+            className="w-full h-52 object-cover object-center"
             alt="Background"
           />
         ) : (
-          <div className="w-full h-44 bg-gradient-to-r from-primary/60 to-secondary/60"></div>
+          <div className="w-full h-52 bg-gradient-to-r from-primary/60 to-secondary/60" />
         )}
         {isEditing && (
           <>
@@ -140,11 +141,10 @@ export const UserProfile = () => {
             />
           </>
         )}
-      </div>
-      <Card className="p-0 overflow-visible">
-        <CardHeader className="flex flex-col items-center relative -mt-14">
+        {/* Avatar positioned and elevated */}
+        <div className="absolute left-1/2 top-36 -translate-x-1/2">
           <div className="relative">
-            <Avatar className="w-28 h-28 border-4 border-background shadow-lg animate-scale-in bg-background">
+            <Avatar className="w-32 h-32 border-4 border-background shadow-lg bg-background">
               <AvatarImage src={profilePhoto || undefined} alt={userProfile.fullName || 'Avatar'} />
               <AvatarFallback>
                 <UserIcon className="w-10 h-10 text-muted-foreground" />
@@ -170,17 +170,27 @@ export const UserProfile = () => {
               </>
             )}
           </div>
-          <div className="pt-3 text-center">
-            <h2 className="text-2xl font-bold text-foreground">{userProfile.fullName || "No Name Set"}</h2>
-            <div className="flex justify-center items-center mt-1 text-muted-foreground gap-2 text-base">
-              <Mail className="w-4 h-4" />
-              <span>{userProfile.email}</span>
-            </div>
+        </div>
+      </div>
+
+      <Card className="p-0 overflow-visible shadow-lg">
+        <CardHeader className="flex flex-col items-center relative pt-20 pb-3">
+          <h2 className="text-3xl font-bold text-foreground">{userProfile.fullName || "No Name Set"}</h2>
+          <div className="flex justify-center items-center mt-2 text-muted-foreground gap-2 text-base">
+            <Mail className="w-4 h-4" />
+            <span>{userProfile.email}</span>
           </div>
+          {isAdmin && (
+            <div className="flex items-center gap-2 mt-2 bg-blue-50 text-blue-700 px-2 py-1 rounded">
+              <Shield className="w-4 h-4" /> <span className="font-mono text-xs">Role:</span>
+              <span className="font-bold capitalize">{userProfile.role}</span>
+            </div>
+          )}
         </CardHeader>
-        <CardContent className="pt-6 pb-8 px-4 md:px-8 bg-background rounded-b-lg shadow-inner">
+
+        <CardContent className="pt-4 pb-8 px-5 md:px-10 bg-background rounded-b-lg">
           {!isEditing ? (
-            <div className="space-y-5">
+            <div className="space-y-6">
               <div>
                 <Label>Bio/Info</Label>
                 <div className="flex items-center gap-2 mt-1">
@@ -204,37 +214,65 @@ export const UserProfile = () => {
                     {userProfile.socialMedia?.twitter && (
                       <div>
                         <Label>Twitter</Label>
-                        <span className="block break-words">{userProfile.socialMedia.twitter}</span>
+                        <a
+                          href={userProfile.socialMedia.twitter}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block break-words text-blue-600 hover:underline"
+                        >
+                          {userProfile.socialMedia.twitter}
+                        </a>
                       </div>
                     )}
                     {userProfile.socialMedia?.linkedin && (
                       <div>
                         <Label>LinkedIn</Label>
-                        <span className="block break-words">{userProfile.socialMedia.linkedin}</span>
+                        <a
+                          href={userProfile.socialMedia.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block break-words text-blue-600 hover:underline"
+                        >
+                          {userProfile.socialMedia.linkedin}
+                        </a>
                       </div>
                     )}
                     {userProfile.socialMedia?.github && (
                       <div>
                         <Label>GitHub</Label>
-                        <span className="block break-words">{userProfile.socialMedia.github}</span>
+                        <a
+                          href={userProfile.socialMedia.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block break-words text-blue-600 hover:underline"
+                        >
+                          {userProfile.socialMedia.github}
+                        </a>
                       </div>
                     )}
                     {userProfile.socialMedia?.website && (
                       <div>
                         <Label>Website</Label>
-                        <span className="block break-words">{userProfile.socialMedia.website}</span>
+                        <a
+                          href={userProfile.socialMedia.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block break-words text-blue-600 hover:underline"
+                        >
+                          {userProfile.socialMedia.website}
+                        </a>
                       </div>
                     )}
                   </div>
                 </div>
               )}
-              <div className="flex justify-between items-center pt-4">
+              <div className="flex justify-end pt-4">
                 {!isEditing && (
                   <Button
                     size="icon"
                     variant="secondary"
                     aria-label="Edit Profile"
-                    className="rounded-full shadow-lg border bg-background/80 hover:bg-primary/90 transition-colors animate-scale-in"
+                    className="rounded-full shadow-lg border bg-background/80 hover:bg-primary/90 transition-colors"
                     onClick={handleEdit}
                   >
                     <Edit className="h-5 w-5 text-primary" />
@@ -373,4 +411,5 @@ export const UserProfile = () => {
   );
 };
 
-// NOTE: src/components/UserProfile.tsx is 286 lines long! Consider asking to refactor into smaller files for maintainability.
+// NOTE: src/components/UserProfile.tsx is 377 lines long! Consider asking to refactor into smaller files for maintainability.
+
