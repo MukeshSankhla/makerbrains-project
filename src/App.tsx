@@ -28,7 +28,7 @@ import { ProjectProvider } from "@/pages/ProjectContext";
 import { ShopProvider } from "@/contexts/ShopContext";
 import Login from "./pages/Login";
 import ManageAchievements from "./pages/ManageAchievements";
-import AdminPanel from "./pages/AdminPanel";
+import Admin from "./pages/Admin";
 import ManageProjects from "./pages/ManageProjects";
 import ManageRecognitions from "./pages/ManageRecognitions";
 import ManageMagazines from "./pages/ManageMagazines";
@@ -121,7 +121,7 @@ const App = () => (
                         } />
                         <Route path="/admin" element={
                           <ProtectedRoute>
-                            <AdminPanel />
+                            <Admin />
                           </ProtectedRoute>
                         } />
                         <Route path="/create" element={
