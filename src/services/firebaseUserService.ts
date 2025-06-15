@@ -1,3 +1,4 @@
+
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { User } from 'firebase/auth';
@@ -8,6 +9,7 @@ export interface UserProfile {
   fullName: string;
   displayName?: string;
   photoURL?: string;
+  backgroundURL?: string;
   info?: string;
   address?: string;
   socialMedia?: {
@@ -35,6 +37,7 @@ export const createUserProfile = async (user: User, additionalData: Partial<User
       fullName: displayName || '',
       displayName,
       photoURL,
+      backgroundURL: '', // set empty by default
       info: '',
       address: '',
       socialMedia: {},
@@ -105,6 +108,7 @@ export const uploadProfilePhoto = async (uid: string, file: File) => {
 
 export const uploadProfileBackground = async (uid: string, file: File) => {
   // Replace with actual upload logic; placeholder implementation.
+  // After getting the URL, you should update the user's profile with that URL.
   return new Promise<string>((resolve) => {
     setTimeout(() => resolve(URL.createObjectURL(file)), 600);
   });
