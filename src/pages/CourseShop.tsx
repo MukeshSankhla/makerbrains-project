@@ -7,13 +7,13 @@ import { collection, getDocs, addDoc } from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { useCart } from "@/hooks/useCart";
 import { Order } from "@/types/shop";
+import { addPurchasedCourseToProfile } from "@/services/firebaseUserService";
+import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 
 export default function CourseShop() {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [purchasedCourses, setPurchasedCourses] = useState<string[]>([]);
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -21,46 +21,14 @@ export default function CourseShop() {
   useEffect(() => {
     const fetchCourses = async () => {
       const snap = await getDocs(collection(db, "courses"));
-      // Ensure each Course gets its id from Firestore doc.id
       const fetchedCourses = snap.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id
       })) as Course[];
       setCourses(fetchedCourses);
-      console.log("Fetched courses:", fetchedCourses.map(c => c.id));
     };
     fetchCourses();
   }, []);
-
-  // Fetch all purchased course ids from orders for this user
-  useEffect(() => {
-    const fetchOrders = async () => {
-      if (!user) {
-        setPurchasedCourses([]);
-        return;
-      }
-      const snap = await getDocs(collection(db, "orders"));
-      const userOrders: Order[] = [];
-      snap.forEach((doc) => {
-        const o = { ...doc.data(), id: doc.id } as Order;
-        if (o.userId === user.uid && Array.isArray(o.items)) {
-          userOrders.push(o);
-        }
-      });
-      // Get unique purchased course ids
-      const owned = new Set<string>();
-      userOrders.forEach((order) => {
-        order.items.forEach((item) => {
-          // Defensive: log each item for inspection
-          console.log("Order item:", item);
-          if (item.type === "course" && item.id) owned.add(item.id);
-        });
-      });
-      console.log("Purchased course IDs found in orders:", [...owned]);
-      setPurchasedCourses([...owned]);
-    };
-    fetchOrders();
-  }, [user]);
 
   // Handler for course "Buy Now"
   const handleBuyCourse = async (course: Course) => {
@@ -73,6 +41,8 @@ export default function CourseShop() {
       navigate("/login");
       return;
     }
+    // Use profile field for purchased detection
+    const purchasedCourses = userProfile?.purchasedCourses || [];
     if (purchasedCourses.includes(course.id)) {
       toast({
         title: "Already purchased",
@@ -87,17 +57,22 @@ export default function CourseShop() {
         userId: user.uid,
         items: [{ ...course, quantity: 1 }],
         totalAmount: course.price,
-        paymentProvider: "stripe", // Or change as needed
+        paymentProvider: "stripe",
         status: "completed",
         createdAt: Date.now(),
         email: user.email || "",
       };
       await addDoc(collection(db, "orders"), order);
-      setPurchasedCourses((prev) => [...prev, course.id]);
+      // Add this course ID to user profile's purchasedCourses (use arrayUnion)
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        purchasedCourses: arrayUnion(course.id),
+      });
       toast({
         title: "Course Purchased!",
         description: "You now have access to this course.",
       });
+      navigate(0); // Refresh to see state update (best effort)
     } catch (e) {
       toast({
         title: "Purchase failed",
@@ -111,6 +86,9 @@ export default function CourseShop() {
   const handleAccessCourse = (course: Course) => {
     navigate(`/courses/${course.id}`);
   };
+
+  // Use userProfile.purchasedCourses as the source of truth
+  const purchasedCourses = userProfile?.purchasedCourses ?? [];
 
   return (
     <div className="container mx-auto py-8">
@@ -133,4 +111,3 @@ export default function CourseShop() {
     </div>
   );
 }
-
