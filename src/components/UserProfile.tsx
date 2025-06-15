@@ -112,71 +112,8 @@ export const UserProfile = () => {
 
   return (
     <div className="max-w-2xl mx-auto pb-10 mt-10 space-y-8 relative">
-      {/* Cover/Background Image */}
-      <div className="relative w-full mb-16">
-        <div className="rounded-2xl overflow-hidden w-full h-52">
-          {bgPhoto ? (
-            <img
-              src={bgPhoto}
-              className="w-full h-52 object-cover object-center"
-              alt="Background"
-            />
-          ) : (
-            <div className="w-full h-52 bg-gradient-to-r from-blue-700 to-green-600" />
-          )}
-        </div>
-        {/* Profile picture avatar, absolutely positioned overlapping bottom of the cover */}
-        <div className="absolute left-1/2 -bottom-12 -translate-x-1/2 z-20">
-          <div className="relative">
-            <Avatar className="w-32 h-32 border-4 border-background shadow-lg">
-              <AvatarImage src={profilePhoto} alt={userProfile.fullName || 'Avatar'} />
-              <AvatarFallback>
-                <UserIcon className="w-10 h-10 text-muted-foreground" />
-                <span className="sr-only">{fallbackInitial}</span>
-              </AvatarFallback>
-            </Avatar>
-            {isEditing && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => profileInputRef.current?.click()}
-                  className="absolute bottom-3 right-2 bg-background/90 p-2 rounded-full shadow hover:bg-primary/90 transition-colors z-10"
-                >
-                  <Edit className="h-4 w-4 text-primary" />
-                </button>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  ref={profileInputRef}
-                  onChange={handleProfilePhotoChange}
-                />
-              </>
-            )}
-          </div>
-        </div>
-        {isEditing && (
-          <>
-            <button
-              type="button"
-              onClick={() => bgInputRef.current?.click()}
-              className="absolute top-3 right-3 bg-background/90 p-2 rounded-full shadow hover:bg-primary/90 transition-colors z-10"
-            >
-              <Edit className="h-5 w-5 text-primary" />
-            </button>
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              ref={bgInputRef}
-              onChange={handleBgPhotoChange}
-            />
-          </>
-        )}
-      </div>
-
       {/* Profile Card below background and avatar */}
-      <Card className="overflow-visible shadow-md pt-16">
+      <Card className="overflow-visible shadow-md pt-6">
         <CardHeader className="flex flex-col items-center pt-0 pb-4 relative">
           <h2 className="text-3xl font-bold text-foreground text-center">{userProfile.fullName || "No Name Set"}</h2>
           <div className="flex flex-col gap-1 mt-2 items-center">
