@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,15 @@ export default function Payment() {
   const location = useLocation();
   const navigate = useNavigate();
   // Info will be in location.state
+
+  // Log entire location object
+  console.log("Payment page loaded. location=", location);
+
   const { order, course, type = "order" } = location.state || {};
+
+  // Log key incoming fields
+  console.log("order:", order, "course:", course, "type:", type);
+
   // Default selection
   const [paymentProvider, setPaymentProvider] = useState("stripe");
   // Shipping cost handling for demo. If passed from prev page, use it.
@@ -33,15 +42,25 @@ export default function Payment() {
     }, 700);
   };
 
-  // New: Handle missing location.state
+  // New: Handle missing location.state or payment info
   if (!order && !course) {
     return (
       <div className="container max-w-md mx-auto py-10">
-        <div className="rounded-lg border p-6 bg-muted text-center">
-          <h2 className="text-xl font-bold mb-2 text-destructive">No Payment Information</h2>
-          <p className="mb-4">No order or course data was found.<br />Please go back to your cart or course page to proceed with a purchase.</p>
+        <div className="rounded-lg border-4 border-red-500 p-6 bg-yellow-100 text-center">
+          <h2 className="text-2xl font-bold mb-2 text-red-700">No Payment Information Detected</h2>
+          <p className="mb-4 text-lg font-semibold text-slate-700">
+            No order or course data was found.
+            <br />
+            Please go back to your cart or course page to proceed with a purchase.
+          </p>
           <Button className="mx-2" onClick={() => navigate("/cart")}>Go to Cart</Button>
           <Button variant="outline" className="mx-2" onClick={() => navigate("/courses")}>Browse Courses</Button>
+          <div className="mt-5 p-2 bg-white border rounded text-left">
+            <b>Debug info:</b>
+            <pre className="text-xs bg-slate-100 p-2 mt-2 rounded text-black overflow-x-auto" style={{ maxWidth: 320 }}>
+{JSON.stringify(location, null, 2)}
+            </pre>
+          </div>
         </div>
       </div>
     );
