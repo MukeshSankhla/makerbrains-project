@@ -1,8 +1,7 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, Settings, List } from "lucide-react";
+import { PlusCircle, Settings, List, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -57,7 +56,7 @@ const AdminPanel = () => {
     {
       title: "User Management",
       description: "View and modify users, roles and profiles",
-      icon: UserIcon, // Use lucide-react User icon
+      icon: UserIcon, // fixed import here!
       actions: [
         {
           label: "Manage Users",
