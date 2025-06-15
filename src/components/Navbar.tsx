@@ -6,16 +6,21 @@ import { Button } from "./ui/button";
 import { LogOut, Menu, X, Shield, User, Phone, Home } from "lucide-react";
 import logoLight from "/src/images/logo_1.png";
 import logoDark from "/src/images/logo_2.png";
-import { useAdminAuth } from "@/contexts/AdminAuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { FaRegEnvelope } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 export function Navbar() {
-  const { isAdmin, logout } = useAdminAuth();
+  const { user, isAdmin, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    setIsMenuOpen(false);
   };
 
   return (
@@ -34,16 +39,6 @@ export function Navbar() {
           />
         </Link>
 
-        {/* Desktop Navigation
-        <div className="hidden md:flex items-center space-x-1">
-          <Link to="/contact">
-            <Button variant="ghost" className="text-base">
-              <FaRegEnvelope className="mr-2 h-4 w-4" />
-              Contact
-            </Button>
-          </Link>
-        </div> */}
-
         {/* Mobile Menu Button */}
         <Button 
           variant="ghost" 
@@ -56,18 +51,27 @@ export function Navbar() {
 
         {/* Right Side Navigation Items */}
         <div className="hidden md:flex ml-auto items-center space-x-1">
-          {isAdmin && (
+          {user ? (
             <>
-              <Link to="/admin">
-                <Button variant="ghost" size="icon" className="relative">
-                  <User className="h-5 w-5" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
-                </Button>
-              </Link>
-              <Button variant="ghost" size="icon" onClick={logout}>
+              <span className="text-sm text-muted-foreground mr-2">
+                {user.displayName || user.email}
+              </span>
+              {isAdmin && (
+                <Link to="/admin">
+                  <Button variant="ghost" size="icon" className="relative">
+                    <User className="h-5 w-5" />
+                    <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
+                  </Button>
+                </Link>
+              )}
+              <Button variant="ghost" size="icon" onClick={handleLogout}>
                 <LogOut className="h-5 w-5" />
               </Button>
             </>
+          ) : (
+            <Link to="/login">
+              <Button variant="outline">Sign In</Button>
+            </Link>
           )}
           <ThemeToggle />
         </div>
@@ -95,20 +99,33 @@ export function Navbar() {
                 Contact
               </Button>
             </Link>
-            {isAdmin && (
+            
+            {user ? (
               <>
-                <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start">
-                    <User className="mr-2 h-4 w-4" />
-                    Admin Panel
-                  </Button>
-                </Link>
-                <Button variant="ghost" className="w-full justify-start" onClick={logout}>
+                <div className="px-3 py-2 text-sm text-muted-foreground">
+                  {user.displayName || user.email}
+                </div>
+                {isAdmin && (
+                  <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start">
+                      <User className="mr-2 h-4 w-4" />
+                      Admin Panel
+                    </Button>
+                  </Link>
+                )}
+                <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
                   Logout
                 </Button>
               </>
+            ) : (
+              <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                <Button variant="outline" className="w-full">
+                  Sign In
+                </Button>
+              </Link>
             )}
+            
             <div className="pt-2 flex justify-center">
               <ThemeToggle />
             </div>

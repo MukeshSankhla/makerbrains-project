@@ -8,6 +8,7 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import { HelmetProvider } from "react-helmet-async";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import Hero from "./pages/hero";
 import PortfolioHero from "./pages/AboutMe";
@@ -22,8 +23,7 @@ import Cart from "./pages/Cart";
 import ManageProducts from "./pages/ManageProducts";
 import { ProjectProvider } from "@/pages/ProjectContext";
 import { ShopProvider } from "@/contexts/ShopContext";
-import { AdminAuthProvider } from "./contexts/AdminAuthContext";
-import AdminLogin from "./pages/AdminLogin";
+import Login from "./pages/Login";
 import ManageAchievements from "./pages/ManageAchievements";
 import AdminPanel from "./pages/AdminPanel";
 import ManageProjects from "./pages/ManageProjects";
@@ -31,16 +31,23 @@ import ManageRecognitions from "./pages/ManageRecognitions";
 import ManageMagazines from "./pages/ManageMagazines";
 import ManageSponsors from "./pages/ManageSponsors";
 import Contact from "./pages/ContactUs";
-import { useAdminAuth } from "./contexts/AdminAuthContext";
 
 const queryClient = new QueryClient();
 
-// Protected route component
+// Protected route component for admin access
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAdmin } = useAdminAuth();
+  const { user, isAdmin, loading } = useAuth();
+  
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
+  
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
   
   if (!isAdmin) {
-    return <Navigate to="/admin-login" />;
+    return <Navigate to="/" />;
   }
   
   return <>{children}</>;
@@ -50,7 +57,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <HelmetProvider>
       <ThemeProvider defaultTheme="system" storageKey="maker-brains-theme">
-        <AdminAuthProvider>
+        <AuthProvider>
           <ProjectProvider>
             <ShopProvider>
               <TooltipProvider>
@@ -76,8 +83,7 @@ const App = () => (
                         <Route path="/cart" element={<Cart />} />
                         <Route path="/contact" element={<Contact />} />
                         <Route path="/legal" element={<Legal />} />
-                        <Route path="/maker-admin-access" element={<AdminLogin />} />
-                        <Route path="/admin-login" element={<Navigate to="/maker-admin-access" />} />
+                        <Route path="/login" element={<Login />} />
                         <Route path="/admin" element={
                           <ProtectedRoute>
                             <AdminPanel />
@@ -118,6 +124,9 @@ const App = () => (
                             <ManageSponsors />
                           </ProtectedRoute>
                         } />
+                        {/* Redirect old admin routes */}
+                        <Route path="/maker-admin-access" element={<Navigate to="/login" />} />
+                        <Route path="/admin-login" element={<Navigate to="/login" />} />
                       </Routes>
                     </main>
                     <Footer />
@@ -126,7 +135,7 @@ const App = () => (
               </TooltipProvider>
             </ShopProvider>
           </ProjectProvider>
-        </AdminAuthProvider>
+        </AuthProvider>
       </ThemeProvider>
     </HelmetProvider>
   </QueryClientProvider>
