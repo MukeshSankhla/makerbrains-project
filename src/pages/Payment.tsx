@@ -2,6 +2,13 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
+// [FIX] Define payment options used in the payment method selector
+const paymentOptions = [
+  { key: "stripe", label: "Stripe" },
+  { key: "razorpay", label: "Razorpay" },
+  { key: "paypal", label: "PayPal" },
+];
+
 // This is a dummy payment page, expects order/cart/course info in location state
 
 export default function Payment() {
