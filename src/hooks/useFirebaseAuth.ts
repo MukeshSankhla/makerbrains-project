@@ -13,9 +13,11 @@ import {
 } from 'firebase/auth';
 import { auth } from '@/config/firebase';
 import { useToast } from '@/hooks/use-toast';
+import { createUserProfile, getUserProfile, UserProfile } from '@/services/firebaseUserService';
 
 export const useFirebaseAuth = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -23,8 +25,22 @@ export const useFirebaseAuth = () => {
   const githubProvider = new GithubAuthProvider();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
+      
+      if (user) {
+        try {
+          // Create or get user profile
+          const profile = await createUserProfile(user);
+          setUserProfile(profile);
+        } catch (error) {
+          console.error('Error handling user profile:', error);
+          setUserProfile(null);
+        }
+      } else {
+        setUserProfile(null);
+      }
+      
       setLoading(false);
     });
 
@@ -150,6 +166,7 @@ export const useFirebaseAuth = () => {
 
   return {
     user,
+    userProfile,
     loading,
     signInWithEmail,
     signUpWithEmail,

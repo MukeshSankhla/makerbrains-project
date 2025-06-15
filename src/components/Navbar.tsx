@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
@@ -56,10 +55,15 @@ export function Navbar() {
               <span className="text-sm text-muted-foreground mr-2">
                 {user.displayName || user.email}
               </span>
+              <Link to="/profile">
+                <Button variant="ghost" size="icon">
+                  <User className="h-5 w-5" />
+                </Button>
+              </Link>
               {isAdmin && (
                 <Link to="/admin">
                   <Button variant="ghost" size="icon" className="relative">
-                    <User className="h-5 w-5" />
+                    <Shield className="h-5 w-5" />
                     <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
                   </Button>
                 </Link>
@@ -105,10 +109,16 @@ export function Navbar() {
                 <div className="px-3 py-2 text-sm text-muted-foreground">
                   {user.displayName || user.email}
                 </div>
+                <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    <User className="mr-2 h-4 w-4" />
+                    Profile
+                  </Button>
+                </Link>
                 {isAdmin && (
                   <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
                     <Button variant="ghost" className="w-full justify-start">
-                      <User className="mr-2 h-4 w-4" />
+                      <Shield className="mr-2 h-4 w-4" />
                       Admin Panel
                     </Button>
                   </Link>

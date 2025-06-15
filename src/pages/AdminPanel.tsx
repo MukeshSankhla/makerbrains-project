@@ -1,18 +1,19 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, Settings, List } from "lucide-react";
-import { useAdminAuth } from "@/contexts/AdminAuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const AdminPanel = () => {
-  const { isAdmin } = useAdminAuth();
+  const { isAdmin, userProfile } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if not admin
   React.useEffect(() => {
     if (!isAdmin) {
-      navigate("/maker-admin-access");
+      navigate("/");
     }
   }, [isAdmin, navigate]);
 
@@ -57,6 +58,13 @@ const AdminPanel = () => {
 
   return (
     <div className="container mx-auto px-4">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">Admin Panel</h1>
+        <p className="text-muted-foreground">
+          Welcome, {userProfile?.fullName || userProfile?.email}
+        </p>
+      </div>
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {adminOptions.map((option, index) => (
           <Card key={index} className="hover:shadow-lg">

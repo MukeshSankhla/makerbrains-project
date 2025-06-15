@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
+import { UserProfile } from "./components/UserProfile";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Index from "./pages/Index";
