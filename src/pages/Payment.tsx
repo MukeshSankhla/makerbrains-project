@@ -1,48 +1,57 @@
-
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-const paymentOptions = [
-  { key: "stripe", label: "Stripe" },
-  { key: "razorpay", label: "Razorpay" },
-  { key: "paypal", label: "PayPal" },
-];
-
 // This is a dummy payment page, expects order/cart/course info in location state
+
 export default function Payment() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  // Info will be in location.state
+  // Forcefully log as the VERY first line in component
+  // (if you do NOT see this line in devtools, the file is not even imported or rendered!)
+  console.log("[DEBUG] PAYMENT PAGE MOUNT");
 
-  // Log entire location object
-  console.log("Payment page loaded. location=", location);
-
-  const { order, course, type = "order" } = location.state || {};
-
-  // Log key incoming fields
-  console.log("order:", order, "course:", course, "type:", type);
-
-  // Default selection
-  const [paymentProvider, setPaymentProvider] = useState("stripe");
-  // Shipping cost handling for demo. If passed from prev page, use it.
-  const [shippingCost] = useState(order?.shippingCost ?? 100); // Default 100 INR
-
-  // Product/course may have one or two prices
-  const getPriceFields = (item: any) => ({
-    india: item.priceIndia ?? 0,
-    world: item.priceWorld ?? 0,
-  });
-
-  const handlePay = () => {
-    // Simulate payment, then redirect appropriately
+  // Always render this so you never get a blank page:
+  // If the rest errors, you at least see this!
+  // You can comment/remove after debug.
+  if (typeof window !== "undefined" && !(window as any).__seen_payment_debug) {
+    (window as any).__seen_payment_debug = true;
     setTimeout(() => {
-      // Simulate "successful" payment, redirect to success.
-      navigate("/payment-success");
-    }, 700);
-  };
+      alert("Payment page rendered - TOP OF COMPONENT - if you see blank page, something is broken in routing or import/export!");
+    }, 1000);
+  }
 
-  // New: Handle missing location.state or payment info
+  // Defensive: wrap location in try/catch to test for error at access
+  let location, navigate;
+  try {
+    location = useLocation();
+    navigate = useNavigate();
+  } catch (e) {
+    return (
+      <div className="container mx-auto py-20">
+        <h1 className="text-red-600 text-3xl font-bold">Error mounting Payment Page</h1>
+        <p className="mt-6 p-4 bg-yellow-100 border rounded">
+          {JSON.stringify(e)}
+        </p>
+      </div>
+    );
+  }
+
+  // Defensive: try/catch for structure errors
+  let order, course, type;
+  try {
+    ({ order, course, type = "order" } = location.state || {});
+    console.log("[DEBUG] location:", location);
+    console.log("[DEBUG] order:", order, "| course:", course, "| type:", type);
+  } catch (e) {
+    return (
+      <div className="container mx-auto py-20">
+        <h2 className="text-red-500 text-xl font-bold mb-4">Payment Page Error</h2>
+        <p>Failed to parse navigation data.</p>
+        <pre className="mt-6 p-3 text-xs bg-slate-100 rounded border overflow-x-auto">{String(e)}</pre>
+      </div>
+    );
+  }
+
+  // fallback block
   if (!order && !course) {
     return (
       <div className="container max-w-md mx-auto py-10">
@@ -65,6 +74,25 @@ export default function Payment() {
       </div>
     );
   }
+
+  // Default selection
+  const [paymentProvider, setPaymentProvider] = useState("stripe");
+  // Shipping cost handling for demo. If passed from prev page, use it.
+  const [shippingCost] = useState(order?.shippingCost ?? 100); // Default 100 INR
+
+  // Product/course may have one or two prices
+  const getPriceFields = (item: any) => ({
+    india: item.priceIndia ?? 0,
+    world: item.priceWorld ?? 0,
+  });
+
+  const handlePay = () => {
+    // Simulate payment, then redirect appropriately
+    setTimeout(() => {
+      // Simulate "successful" payment, redirect to success.
+      navigate("/payment-success");
+    }, 700);
+  };
 
   return (
     <div className="container max-w-md mx-auto py-10">
