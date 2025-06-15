@@ -6,7 +6,8 @@ import { LogOut, Shield, User as UserIcon, ShoppingCart } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 
-export function ProfileDropdown({ onLogout }: { onLogout: () => void }) {
+// Provide a no-op default for onLogout to avoid crash if not passed
+export function ProfileDropdown({ onLogout }: { onLogout?: () => void }) {
   const { user, userProfile, isAdmin } = useAuth();
 
   const fullName = userProfile?.fullName || userProfile?.displayName || user?.displayName || "User";
@@ -46,7 +47,8 @@ export function ProfileDropdown({ onLogout }: { onLogout: () => void }) {
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="flex items-center gap-2 text-destructive" onClick={onLogout}>
+        <DropdownMenuItem className="flex items-center gap-2 text-destructive"
+          onClick={onLogout || (() => {})}>
           <LogOut className="h-4 w-4" />
           Logout
         </DropdownMenuItem>

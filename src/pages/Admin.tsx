@@ -45,6 +45,12 @@ const Admin = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <div className="container mx-auto px-4 py-8">
+        {/* PROMINENT BUTTON FOR ORDER MANAGEMENT */}
+        <div className="flex justify-end mb-4">
+          <Button onClick={() => navigate('/admin-orders')} variant="default">
+            Go to Order Management
+          </Button>
+        </div>
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold">Admin Dashboard</h1>
