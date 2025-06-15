@@ -9,6 +9,9 @@ import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { ShoppingCart, ShoppingBag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import AddressSelectModal from "@/components/AddressSelectModal";
+import { useAddressBook } from "@/hooks/useAddressBook";
+import { Address } from "@/types/address";
 
 export default function Cart() {
   const { cart, removeItem, clearCart, addItem } = useCart();
@@ -17,6 +20,9 @@ export default function Cart() {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [addressModal, setAddressModal] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const { addresses } = useAddressBook();
 
   // Single cart totals calculation
   const subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
@@ -32,6 +38,15 @@ export default function Cart() {
       });
       return;
     }
+    if (!selectedAddress) {
+      toast({
+        title: "Select shipping address",
+        description: "Please select a shipping address before checkout.",
+        variant: "destructive",
+      });
+      setAddressModal(true);
+      return;
+    }
     if (!cart.length) return;
 
     setLoading(true);
@@ -44,6 +59,7 @@ export default function Cart() {
       status: "pending",
       createdAt: Date.now(),
       email: user.email || "",
+      addressId: selectedAddress.id, // <--- ADD ADDRESS ID
     };
 
     try {
@@ -209,6 +225,22 @@ export default function Cart() {
                 <option value="paypal">PayPal</option>
               </select>
             </div>
+            <div>
+              <label className="mr-3 font-medium">Shipping Address:</label>
+              {selectedAddress ? (
+                <span className="block bg-muted rounded p-2 mt-1">
+                  {selectedAddress.name} - {selectedAddress.line1}, {selectedAddress.city}, {selectedAddress.state}, {selectedAddress.zip}, {selectedAddress.country}
+                  <Button className="ml-2" size="sm" variant="outline" onClick={() => setAddressModal(true)}>Change</Button>
+                </span>
+              ) : (
+                <Button size="sm" onClick={() => setAddressModal(true)}>
+                  Select Address
+                </Button>
+              )}
+              <Button asChild size="sm" variant="link" className="ml-2" >
+                <Link to="/address-book">Manage Addresses</Link>
+              </Button>
+            </div>
             <Button
               className="w-full"
               onClick={handleCheckout}
@@ -221,6 +253,14 @@ export default function Cart() {
             </div>
           </div>
         </div>
+      )}
+      {addressModal && (
+        <AddressSelectModal
+          open={addressModal}
+          onClose={() => setAddressModal(false)}
+          selectedId={selectedAddress?.id}
+          onSelect={(addr) => setSelectedAddress(addr)}
+        />
       )}
     </div>
   );

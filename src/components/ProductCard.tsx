@@ -1,13 +1,22 @@
 
 import { Product, Course } from "@/types/shop";
 import { Button } from "@/components/ui/button";
-
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 interface ProductCardProps {
   item: Product | Course;
   onAddToCart?: () => void;
 }
-
 export function ProductCard({ item, onAddToCart }: ProductCardProps) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  function handleAdd() {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    onAddToCart && onAddToCart();
+  }
   return (
     <div className="rounded border bg-card text-card-foreground p-4 shadow hover:shadow-lg flex flex-col justify-between transition-colors">
       <img
@@ -29,7 +38,7 @@ export function ProductCard({ item, onAddToCart }: ProductCardProps) {
         </div>
       </div>
       {onAddToCart && (
-        <Button variant="outline" className="mt-3" onClick={onAddToCart}>
+        <Button variant="outline" className="mt-3" onClick={handleAdd}>
           Add to Cart
         </Button>
       )}

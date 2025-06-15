@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { db } from "@/config/firebase";
@@ -7,6 +6,7 @@ import { Order } from "@/types/shop";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { Address } from "@/types/address";
 
 // Timeline UI
 const statuses = [
@@ -21,6 +21,7 @@ export default function OrderDetails() {
   const { user } = useAuth();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
 
   useEffect(() => {
     if (!orderId) return;
@@ -32,6 +33,18 @@ export default function OrderDetails() {
       setLoading(false);
     });
   }, [orderId]);
+
+  useEffect(() => {
+    if (!order || !order.addressId) {
+      setShippingAddress(null);
+      return;
+    }
+    getDoc(doc(db, "addresses", order.addressId)).then((addrSnap) => {
+      if (addrSnap.exists()) {
+        setShippingAddress({ ...addrSnap.data(), id: addrSnap.id } as Address);
+      }
+    });
+  }, [order]);
 
   if (loading) return <div className="p-8 text-center">Loading...</div>;
   if (!order) return <div className="p-8 text-center">Order not found.</div>;
@@ -80,7 +93,17 @@ export default function OrderDetails() {
       </div>
       {/* Details */}
       <div className="mb-4">
-        <div><b>Placed:</b> {new Date(order.createdAt).toLocaleString()}</div>
+        <div><b>Placed:</b> {order && new Date(order.createdAt).toLocaleString()}</div>
+        <div className="mt-2 font-medium">Shipping Address:</div>
+        {shippingAddress ? (
+          <div className="mb-2 text-sm">
+            {shippingAddress.name}, {shippingAddress.line1}
+            {shippingAddress.line2 && <> {shippingAddress.line2}</>}, {shippingAddress.city}, {shippingAddress.state}, {shippingAddress.zip}, {shippingAddress.country}<br />
+            <span className="text-xs text-muted-foreground">{shippingAddress.phone}</span>
+          </div>
+        ) : (
+          <div className="mb-2 text-muted-foreground text-xs">N/A</div>
+        )}
         <div className="mt-2 font-medium">Items:</div>
         <ul className="mb-2 list-disc pl-6">
           {order.items.map(item => (

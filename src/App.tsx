@@ -35,6 +35,9 @@ import ManageMagazines from "./pages/ManageMagazines";
 import ManageSponsors from "./pages/ManageSponsors";
 import Contact from "./pages/ContactUs";
 import UserManagement from "./pages/UserManagement";
+import AddressBook from "./pages/AddressBook";
+import OrderDetails from "./pages/OrderDetails";
+import AdminOrders from "./pages/AdminOrders";
 
 const queryClient = new QueryClient();
 
@@ -166,6 +169,21 @@ const App = () => (
                         <Route path="/user-management" element={
                           <ProtectedRoute>
                             <UserManagement />
+                          </ProtectedRoute>
+                        } />
+                        <Route path="/address-book" element={
+                          <AuthenticatedRoute>
+                            <AddressBook />
+                          </AuthenticatedRoute>
+                        } />
+                        <Route path="/orders/:orderId" element={
+                          <AuthenticatedRoute>
+                            <OrderDetails />
+                          </AuthenticatedRoute>
+                        } />
+                        <Route path="/admin-orders" element={
+                          <ProtectedRoute>
+                            <AdminOrders />
                           </ProtectedRoute>
                         } />
                         {/* Redirect old admin routes */}

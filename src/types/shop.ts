@@ -33,4 +33,5 @@ export type Order = {
   status: "pending" | "shipped" | "completed" | "cancelled";
   createdAt: number;
   email?: string;
+  addressId?: string;
 };
