@@ -27,15 +27,15 @@ const AdminPanel = () => {
       description: "Create and manage all projects",
       icon: List,
       actions: [
-        { 
-          label: "Create New Project", 
-          icon: PlusCircle, 
+        {
+          label: "Create New Project",
+          icon: PlusCircle,
           link: "/create",
           color: "text-emerald-600"
         },
-        { 
-          label: "Manage Projects", 
-          icon: Settings, 
+        {
+          label: "Manage Projects",
+          icon: Settings,
           link: "/manage-projects",
           color: "text-blue-600"
         },
@@ -46,14 +46,27 @@ const AdminPanel = () => {
       description: "Manage achievements, recognitions, magazine features and sponsors",
       icon: List,
       actions: [
-        { 
-          label: "Manage Home Content", 
-          icon: Settings, 
+        {
+          label: "Manage Home Content",
+          icon: Settings,
           link: "/manage-achievements",
           color: "text-purple-600"
         },
       ],
     },
+    {
+      title: "User Management",
+      description: "View and modify users, roles and profiles",
+      icon: UserIcon, // Use lucide-react User icon
+      actions: [
+        {
+          label: "Manage Users",
+          icon: UserIcon,
+          link: "/user-management",
+          color: "text-primary"
+        }
+      ]
+    }
   ];
 
   return (
@@ -65,7 +78,7 @@ const AdminPanel = () => {
         </p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {adminOptions.map((option, index) => (
           <Card key={index} className="hover:shadow-lg">
             <CardHeader>

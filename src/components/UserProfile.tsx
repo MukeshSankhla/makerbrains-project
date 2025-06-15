@@ -1,4 +1,3 @@
-
 import { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -112,8 +111,10 @@ export const UserProfile = () => {
   const fallbackInitial = userProfile.fullName?.charAt(0).toUpperCase() || userProfile.email?.charAt(0).toUpperCase() || '?';
 
   return (
-    <div className="max-w-xl mx-auto pb-10 space-y-8">
-      <div className="relative rounded-lg overflow-hidden shadow bg-background">
+    <div className="max-w-2xl mx-auto pb-10 mt-10 space-y-8">
+      {/* Profile Card with improved layout */}
+      <div className="relative rounded-xl overflow-hidden bg-background shadow-lg">
+        {/* Background image or gradient */}
         {bgPhoto ? (
           <img
             src={bgPhoto}
@@ -128,7 +129,7 @@ export const UserProfile = () => {
             <button
               type="button"
               onClick={() => bgInputRef.current?.click()}
-              className="absolute top-3 right-3 bg-background/80 p-2 rounded-full shadow hover:bg-primary/90 transition-colors z-10"
+              className="absolute top-3 right-3 bg-background/90 p-2 rounded-full shadow hover:bg-primary/90 transition-colors z-10"
             >
               <Edit className="h-5 w-5 text-primary" />
             </button>
@@ -141,8 +142,8 @@ export const UserProfile = () => {
             />
           </>
         )}
-        {/* Avatar positioned and elevated */}
-        <div className="absolute left-1/2 top-36 -translate-x-1/2">
+        {/* Avatar positioned to overlap header, slightly elevated */}
+        <div className="absolute left-1/2 top-40 -translate-x-1/2 translate-y-1/2 z-10">
           <div className="relative">
             <Avatar className="w-32 h-32 border-4 border-background shadow-lg bg-background">
               <AvatarImage src={profilePhoto || undefined} alt={userProfile.fullName || 'Avatar'} />
@@ -156,7 +157,7 @@ export const UserProfile = () => {
                 <button
                   type="button"
                   onClick={() => profileInputRef.current?.click()}
-                  className="absolute bottom-3 right-2 bg-background/80 p-2 rounded-full shadow hover:bg-primary/90 transition-colors z-10"
+                  className="absolute bottom-3 right-2 bg-background/90 p-2 rounded-full shadow hover:bg-primary/90 transition-colors z-10"
                 >
                   <Edit className="h-4 w-4 text-primary" />
                 </button>
@@ -173,111 +174,109 @@ export const UserProfile = () => {
         </div>
       </div>
 
-      <Card className="p-0 overflow-visible shadow-lg">
-        <CardHeader className="flex flex-col items-center relative pt-20 pb-3">
-          <h2 className="text-3xl font-bold text-foreground">{userProfile.fullName || "No Name Set"}</h2>
-          <div className="flex justify-center items-center mt-2 text-muted-foreground gap-2 text-base">
-            <Mail className="w-4 h-4" />
-            <span>{userProfile.email}</span>
+      {/* Main Card for content */}
+      <Card className="overflow-visible shadow-md">
+        <CardHeader className="relative flex flex-col items-center pt-20 pb-4">
+          <h2 className="text-3xl font-bold text-foreground text-center">{userProfile.fullName || "No Name Set"}</h2>
+          <div className="flex flex-col gap-1 mt-2 items-center">
+            <span className="flex items-center text-muted-foreground gap-2 text-base">
+              <Mail className="w-4 h-4" />
+              {userProfile.email}
+            </span>
+            {/* Admins see role */}
+            {isAdmin && (
+              <div className="flex items-center gap-2 mt-2 bg-blue-50 text-blue-700 px-2 py-1 rounded">
+                <Shield className="w-4 h-4" /> <span className="font-mono text-xs">Role:</span>
+                <span className="font-bold capitalize">{userProfile.role}</span>
+              </div>
+            )}
           </div>
-          {isAdmin && (
-            <div className="flex items-center gap-2 mt-2 bg-blue-50 text-blue-700 px-2 py-1 rounded">
-              <Shield className="w-4 h-4" /> <span className="font-mono text-xs">Role:</span>
-              <span className="font-bold capitalize">{userProfile.role}</span>
-            </div>
-          )}
         </CardHeader>
-
-        <CardContent className="pt-4 pb-8 px-5 md:px-10 bg-background rounded-b-lg">
+        <CardContent className="pt-2 pb-8 px-5 md:px-10 bg-background rounded-b-xl">
           {!isEditing ? (
-            <div className="space-y-6">
+            <div className="space-y-6 mt-4">
               <div>
-                <Label>Bio/Info</Label>
+                <Label className="font-semibold">Bio/Info</Label>
                 <div className="flex items-center gap-2 mt-1">
                   <Info className="h-4 w-4 text-muted-foreground" />
                   <span className="whitespace-pre-line">{userProfile.info || <span className="text-muted-foreground italic">No bio</span>}</span>
                 </div>
               </div>
               <div>
-                <Label>Address</Label>
+                <Label className="font-semibold">Address</Label>
                 <div className="flex items-center gap-2 mt-1">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <span>{userProfile.address || <span className="text-muted-foreground italic">No address</span>}</span>
                 </div>
               </div>
-              {/* Only show if at least one social media is filled */}
-              {(userProfile.socialMedia?.twitter || userProfile.socialMedia?.linkedin ||
-                userProfile.socialMedia?.github || userProfile.socialMedia?.website) && (
-                <div>
-                  <Label>Social Media</Label>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                    {userProfile.socialMedia?.twitter && (
-                      <div>
-                        <Label>Twitter</Label>
-                        <a
-                          href={userProfile.socialMedia.twitter}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block break-words text-blue-600 hover:underline"
-                        >
-                          {userProfile.socialMedia.twitter}
-                        </a>
-                      </div>
-                    )}
-                    {userProfile.socialMedia?.linkedin && (
-                      <div>
-                        <Label>LinkedIn</Label>
-                        <a
-                          href={userProfile.socialMedia.linkedin}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block break-words text-blue-600 hover:underline"
-                        >
-                          {userProfile.socialMedia.linkedin}
-                        </a>
-                      </div>
-                    )}
-                    {userProfile.socialMedia?.github && (
-                      <div>
-                        <Label>GitHub</Label>
-                        <a
-                          href={userProfile.socialMedia.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block break-words text-blue-600 hover:underline"
-                        >
-                          {userProfile.socialMedia.github}
-                        </a>
-                      </div>
-                    )}
-                    {userProfile.socialMedia?.website && (
-                      <div>
-                        <Label>Website</Label>
-                        <a
-                          href={userProfile.socialMedia.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block break-words text-blue-600 hover:underline"
-                        >
-                          {userProfile.socialMedia.website}
-                        </a>
-                      </div>
-                    )}
-                  </div>
+              {/* Social Media, always showing with blue/clickable links if present */}
+              <div>
+                <Label className="font-semibold">Social Media</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                  {userProfile.socialMedia?.twitter && (
+                    <div>
+                      <Label className="text-xs">Twitter</Label>
+                      <a
+                        href={userProfile.socialMedia.twitter}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block break-words text-blue-600 hover:underline"
+                      >
+                        {userProfile.socialMedia.twitter}
+                      </a>
+                    </div>
+                  )}
+                  {userProfile.socialMedia?.linkedin && (
+                    <div>
+                      <Label className="text-xs">LinkedIn</Label>
+                      <a
+                        href={userProfile.socialMedia.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block break-words text-blue-600 hover:underline"
+                      >
+                        {userProfile.socialMedia.linkedin}
+                      </a>
+                    </div>
+                  )}
+                  {userProfile.socialMedia?.github && (
+                    <div>
+                      <Label className="text-xs">GitHub</Label>
+                      <a
+                        href={userProfile.socialMedia.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block break-words text-blue-600 hover:underline"
+                      >
+                        {userProfile.socialMedia.github}
+                      </a>
+                    </div>
+                  )}
+                  {userProfile.socialMedia?.website && (
+                    <div>
+                      <Label className="text-xs">Website</Label>
+                      <a
+                        href={userProfile.socialMedia.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block break-words text-blue-600 hover:underline"
+                      >
+                        {userProfile.socialMedia.website}
+                      </a>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
               <div className="flex justify-end pt-4">
-                {!isEditing && (
-                  <Button
-                    size="icon"
-                    variant="secondary"
-                    aria-label="Edit Profile"
-                    className="rounded-full shadow-lg border bg-background/80 hover:bg-primary/90 transition-colors"
-                    onClick={handleEdit}
-                  >
-                    <Edit className="h-5 w-5 text-primary" />
-                  </Button>
-                )}
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  aria-label="Edit Profile"
+                  className="rounded-full shadow-lg border bg-background/80 hover:bg-primary/90 transition-colors"
+                  onClick={handleEdit}
+                >
+                  <Edit className="h-5 w-5 text-primary" />
+                </Button>
               </div>
             </div>
           ) : (
@@ -412,4 +411,3 @@ export const UserProfile = () => {
 };
 
 // NOTE: src/components/UserProfile.tsx is 377 lines long! Consider asking to refactor into smaller files for maintainability.
-
