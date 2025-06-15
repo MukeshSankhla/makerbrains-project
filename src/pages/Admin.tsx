@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Header from "@/components/Header";
-import { Book, User, BarChart, Plus, Edit, Eye, ListCheck } from "lucide-react";
+import { Book, User, BarChart, Plus, Edit, Eye, ListCheck, Package } from "lucide-react";
 import AdminOrderTable from "@/components/AdminOrderTable";
 import { useNavigate } from "react-router-dom";
 
@@ -51,14 +50,14 @@ const Admin = () => {
             <h1 className="text-3xl font-bold">Admin Dashboard</h1>
             <p className="text-muted-foreground">Manage your MakerBrains platform</p>
           </div>
-          <Button>
+          <Button onClick={() => navigate('/create')}>
             <Plus className="h-4 w-4 mr-2" />
             New Project
           </Button>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Quick Access Cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           {stats.map((stat) => (
             <Card key={stat.title}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -70,6 +69,23 @@ const Admin = () => {
               </CardContent>
             </Card>
           ))}
+          {/* ADMIN: Add Order Management Quick Access */}
+          <Card
+            className="cursor-pointer transition-shadow hover:shadow-lg"
+            onClick={() => navigate('/admin-orders')}
+          >
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium flex items-center">
+                <Package className="h-4 w-4 mr-2 text-primary" />
+                Order Management
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-base font-semibold text-muted-foreground">
+                View &amp; manage orders
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Main Content Tabs */}
@@ -197,6 +213,12 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="orders">
+            <div className="mb-4">
+              <Button onClick={() => navigate('/admin-orders')} variant="outline" className="mb-2">
+                <ListCheck className="h-4 w-4 mr-2" />
+                Go to Order Management
+              </Button>
+            </div>
             <Card>
               <CardHeader>
                 <CardTitle>

@@ -8,9 +8,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { updateUserProfile } from '@/services/firebaseUserService';
 import { useToast } from '@/hooks/use-toast';
-import { User as UserIcon, Mail, Edit } from 'lucide-react';
+import { User as UserIcon, Mail, Edit, Book } from 'lucide-react';
 import { uploadProfilePhoto, uploadProfileBackground } from '@/services/firebaseUserService';
 import { useNavigate } from "react-router-dom";
+import { useAddressBook } from '@/hooks/useAddressBook';
 
 export const UserProfile = () => {
   const { user, userProfile, isAdmin } = useAuth();
@@ -36,6 +37,12 @@ export const UserProfile = () => {
       website: userProfile?.socialMedia?.website || '',
     },
   });
+
+  // Hook to get addresses for the profile user
+  const { addresses } = useAddressBook();
+
+  // Get the latest (or first, or defaulted) address of the user
+  const latestAddress = addresses && addresses.length > 0 ? addresses[0] : null;
 
   // Handlers for image uploads
   const handleProfilePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,7 +145,17 @@ export const UserProfile = () => {
               <div>
                 <Label className="font-semibold">Address</Label>
                 <div className="flex items-center gap-2 mt-1">
-                  <span>{userProfile.address || <span className="text-muted-foreground italic">No address</span>}</span>
+                  {/* Updated: Show address from AddressBook */}
+                  {latestAddress ? (
+                    <span>
+                      {latestAddress.name}, {latestAddress.line1}
+                      {latestAddress.line2 && <> {latestAddress.line2}</>}, {latestAddress.city}, {latestAddress.state}, {latestAddress.zip}, {latestAddress.country}
+                      <br />
+                      <span className="text-xs text-muted-foreground">{latestAddress.phone}</span>
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground italic">No address</span>
+                  )}
                 </div>
               </div>
               {/* Social Media */}
