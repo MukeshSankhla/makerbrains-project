@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { db } from "@/config/firebase";
@@ -9,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { Address } from "@/types/address";
 import { ListOrdered, Timer, Clock, TrendingUp, TrendingDown } from "lucide-react";
+import { useCurrency } from "@/hooks/useCurrency";
 
 // Timeline UI
 const statuses = [
@@ -24,6 +24,7 @@ export default function OrderDetails() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
+  const { currency, format } = useCurrency();
 
   useEffect(() => {
     if (!orderId) return;
@@ -54,6 +55,33 @@ export default function OrderDetails() {
 
   // Timeline logic
   const currentStatusIdx = statuses.findIndex(s => s.key === order.status);
+
+  // For address, try shippingAddress (new), fall back to legacy lookup:
+  const getOrderAddressDisplay = () => {
+    if (order?.shippingAddress) {
+      const a = order.shippingAddress;
+      return (
+        <div className="mb-2 text-sm">
+          {a.name}, {a.line1}
+          {a.line2 && <> {a.line2}</>}, {a.city}, {a.state}, {a.zip}, {a.country}
+          {a.phone && <>
+            <br /><span className="text-xs text-muted-foreground">{a.phone}</span>
+          </>}
+        </div>
+      );
+    }
+    if (shippingAddress) {
+      return (
+        <div className="mb-2 text-sm">
+          {shippingAddress.name}, {shippingAddress.line1}
+          {shippingAddress.line2 && <> {shippingAddress.line2}</>}, {shippingAddress.city}, {shippingAddress.state}, {shippingAddress.zip}, {shippingAddress.country}
+          <br />
+          <span className="text-xs text-muted-foreground">{shippingAddress.phone}</span>
+        </div>
+      );
+    }
+    return <div className="mb-2 text-muted-foreground text-xs">N/A</div>;
+  };
 
   return (
     <div className="container max-w-xl mx-auto p-6">
@@ -102,22 +130,14 @@ export default function OrderDetails() {
       <div className="mb-4">
         <div><b>Placed:</b> {order && new Date(order.createdAt).toLocaleString()}</div>
         <div className="mt-2 font-medium">Shipping Address:</div>
-        {shippingAddress ? (
-          <div className="mb-2 text-sm">
-            {shippingAddress.name}, {shippingAddress.line1}
-            {shippingAddress.line2 && <> {shippingAddress.line2}</>}, {shippingAddress.city}, {shippingAddress.state}, {shippingAddress.zip}, {shippingAddress.country}<br />
-            <span className="text-xs text-muted-foreground">{shippingAddress.phone}</span>
-          </div>
-        ) : (
-          <div className="mb-2 text-muted-foreground text-xs">N/A</div>
-        )}
+        {getOrderAddressDisplay()}
         <div className="mt-2 font-medium">Items:</div>
         <ul className="mb-2 list-disc pl-6">
           {order.items.map(item => (
             <li key={item.id + item.type}>{item.title} x {item.quantity} (₹{item.price} each)</li>
           ))}
         </ul>
-        <div className="font-bold mt-2">Total: ₹{order.totalAmount}</div>
+        <div className="font-bold mt-2">Total: {format(order.totalAmount)}</div>
       </div>
       <Button asChild variant="outline">
         <Link to="/orders">Back to Orders</Link>

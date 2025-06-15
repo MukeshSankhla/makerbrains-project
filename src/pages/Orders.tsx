@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Order } from "@/types/shop";
 import { useAuth } from "@/contexts/AuthContext";
@@ -6,10 +5,12 @@ import { db } from "@/config/firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { useCurrency } from "@/hooks/useCurrency";
 
 export default function Orders() {
   const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
+  const { currency, format } = useCurrency();
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -49,12 +50,12 @@ export default function Orders() {
               <ul className="text-sm">
                 {order.items.map((item) => (
                   <li key={item.id + item.type}>
-                    {item.title} × {item.quantity} — ₹{item.price}
+                    {item.title} × {item.quantity} — {format(item.price)}
                   </li>
                 ))}
               </ul>
               <div className="font-bold text-green-700 mt-1">
-                Total: ₹{order.totalAmount}
+                Total: {format(order.totalAmount)}
               </div>
             </li>
           ))}

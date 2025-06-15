@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import AddressSelectModal from "@/components/AddressSelectModal";
 import { useAddressBook } from "@/hooks/useAddressBook";
 import { Address } from "@/types/address";
+import { useCurrency } from "@/hooks/useCurrency";
 
 export default function Cart() {
   const { cart, removeItem, clearCart, addItem } = useCart();
@@ -23,6 +24,7 @@ export default function Cart() {
   const [addressModal, setAddressModal] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const { addresses } = useAddressBook();
+  const { currency, format } = useCurrency();
 
   // Single cart totals calculation
   const subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
@@ -51,7 +53,14 @@ export default function Cart() {
 
     setLoading(true);
 
-    const order: Omit<Order, "id"> = {
+    // --- [NEW] Copy full address details into order ---
+    // Remove id, userId, createdAt, updatedAt for safety.
+    const {
+      id, userId, createdAt, updatedAt,
+      ...addressCopy
+    } = selectedAddress;
+
+    const order: Omit<Order, "id"> & { shippingAddress: typeof addressCopy } = {
       userId: user.uid,
       items: cart,
       totalAmount: total,
@@ -59,7 +68,8 @@ export default function Cart() {
       status: "pending",
       createdAt: Date.now(),
       email: user.email || "",
-      addressId: selectedAddress.id, // <--- ADD ADDRESS ID
+      addressId: selectedAddress.id, // Keep for legacy/reference
+      shippingAddress: addressCopy, // Copy full address
     };
 
     try {
@@ -70,19 +80,17 @@ export default function Cart() {
         description: "Thank you for shopping with us. Track your order in the orders section.",
         variant: "default",
       });
-      // After successful placement, try to send order confirmation email via backend function
       try {
         await fetch("/api/sendOrderEmail", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            orderId: "new", // Let backend find latest order by user if needed or update in AdminOrderTable status changes
+            orderId: "new",
             status: "pending",
             email: user.email || ""
           })
         });
       } catch (e) {
-        // fail silently, already placed order
         console.warn("Failed to send order email", e);
       }
       navigate("/orders");
@@ -201,15 +209,15 @@ export default function Cart() {
             <h2 className="text-lg font-semibold mb-2">Order Summary</h2>
             <div className="flex justify-between text-sm">
               <span>Subtotal</span>
-              <span>₹{subtotal}</span>
+              <span>{format(subtotal)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span>GST (18%)</span>
-              <span>₹{tax}</span>
+              <span>{format(tax)}</span>
             </div>
             <div className="flex justify-between text-lg font-bold border-t pt-2">
               <span>Total</span>
-              <span className="text-primary">₹{total}</span>
+              <span className="text-primary">{format(total)}</span>
             </div>
             <div>
               <label className="mr-3 font-medium">Payment Method:</label>

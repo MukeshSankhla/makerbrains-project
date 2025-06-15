@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { db } from "@/config/firebase";
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
@@ -6,6 +5,7 @@ import { Order } from "@/types/shop";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useCurrency } from "@/hooks/useCurrency";
 
 const statusLabels: Record<Order["status"], string> = {
   pending: "Pending",
@@ -25,6 +25,7 @@ export default function AdminOrderTable() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [updating, setUpdating] = useState<string | null>(null);
   const { toast } = useToast();
+  const { currency, format } = useCurrency();
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -80,7 +81,7 @@ export default function AdminOrderTable() {
                 <td className="p-2 font-mono">{order.id.slice(-6).toUpperCase()}</td>
                 <td className="p-2">{order.userId}</td>
                 <td className="p-2">{new Date(order.createdAt).toLocaleString()}</td>
-                <td className="p-2 font-semibold">₹{order.totalAmount}</td>
+                <td className="p-2 font-semibold">{format(order.totalAmount)}</td>
                 <td className="p-2">
                   <Badge variant={statusVariants[order.status]} className="capitalize">{statusLabels[order.status]}</Badge>
                 </td>

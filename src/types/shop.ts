@@ -1,4 +1,3 @@
-
 export type Product = {
   id: string;
   title: string;
@@ -34,4 +33,5 @@ export type Order = {
   createdAt: number;
   email?: string;
   addressId?: string;
+  shippingAddress?: Omit<import("./address").Address, "id" | "userId" | "createdAt" | "updatedAt">; // [NEW] store address snapshot
 };
