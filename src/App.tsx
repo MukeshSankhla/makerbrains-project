@@ -1,4 +1,3 @@
-
 import React, { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -39,8 +38,6 @@ import UserManagement from "./pages/UserManagement";
 import AddressBook from "./pages/AddressBook";
 import OrderDetails from "./pages/OrderDetails";
 import AdminOrders from "./pages/AdminOrders";
-// [ADD]
-import Payment from "./pages/Payment";
 
 const queryClient = new QueryClient();
 
@@ -109,8 +106,6 @@ const App = () => (
                         <Route path="/shop" element={<Shop />} />
                         <Route path="/courses" element={<CourseShop />} />
                         <Route path="/cart" element={<Cart />} />
-                        {/* [ADD PAYMENT ROUTE] */}
-                        <Route path="/payment" element={<Payment />} />
                         <Route path="/orders" element={
                           <AuthenticatedRoute>
                             <Orders />

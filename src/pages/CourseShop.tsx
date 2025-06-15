@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Course } from "@/types/shop";
 import { ProductCard } from "@/components/ProductCard";
@@ -50,8 +51,35 @@ export default function CourseShop() {
       });
       return;
     }
-    // ---- CHANGED: Go to payment page, passing course data ----
-    navigate("/payment", { state: { course, type: "course" } });
+    try {
+      // Directly create an order for this course
+      const order: Omit<Order, "id"> = {
+        userId: user.uid,
+        items: [{ ...course, quantity: 1 }],
+        totalAmount: course.price,
+        paymentProvider: "stripe",
+        status: "completed",
+        createdAt: Date.now(),
+        email: user.email || "",
+      };
+      await addDoc(collection(db, "orders"), order);
+      // Add this course ID to user profile's purchasedCourses (use arrayUnion)
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        purchasedCourses: arrayUnion(course.id),
+      });
+      toast({
+        title: "Course Purchased!",
+        description: "You now have access to this course.",
+      });
+      navigate(0); // Refresh to see state update (best effort)
+    } catch (e) {
+      toast({
+        title: "Purchase failed",
+        description: "Could not complete purchase.",
+        variant: "destructive",
+      });
+    }
   };
 
   // Handler for accessing the course

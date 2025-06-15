@@ -2,24 +2,18 @@ export type Product = {
   id: string;
   title: string;
   description: string;
-  // Old price (for backward compatibility - will remove in UI?):
-  price?: number;
-  priceIndia: number;
-  priceWorld: number;
+  price: number; // in INR
   category: string;
   image: string;
   stock: number;
-  type: "product";
+  type: "product"; // distinguishes from course
 };
 
 export type Course = {
   id: string;
   title: string;
   description: string;
-  // Old price (for backward compatibility - will remove in UI?):
-  price?: number;
-  priceIndia: number;
-  priceWorld: number;
+  price: number;
   image: string;
   instructor: string;
   type: "course";
@@ -40,9 +34,7 @@ export type Order = {
   email?: string;
   addressId?: string;
   shippingAddress?: Omit<import("./address").Address, "id" | "userId" | "createdAt" | "updatedAt">;
-  trackingId?: string;
-  trackingUrl?: string;
-  adminComment?: string;
-  // [NEW]
-  shippingCost?: number;
+  trackingId?: string;           // [NEW] for shipment tracking
+  trackingUrl?: string;          // [NEW] for shipment tracking link
+  adminComment?: string;         // [NEW] for admin-user communication
 };
