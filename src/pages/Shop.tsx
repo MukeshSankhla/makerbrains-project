@@ -26,11 +26,15 @@ export default function Shop() {
       <h1 className="text-2xl font-bold mb-4">Shop</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {products.map((p) => (
-          <div key={p.id} onClick={() => navigate(`/product/${p.id}`)} className="cursor-pointer">
+          <div
+            key={p.id}
+            onClick={() => navigate(`/product/${p.id}`)}
+            className="cursor-pointer"
+          >
             <ProductCard
               item={p}
-              onAddToCart={(e) => {
-                e?.stopPropagation?.();
+              onAddToCart={() => {
+                // no parameter, just add item
                 addItem({ ...p, quantity: 1 });
               }}
             />
