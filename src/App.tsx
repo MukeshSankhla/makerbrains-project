@@ -1,4 +1,3 @@
-
 import React, { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -6,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
-import Navbar from "./components/Navbar";
+import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import { UserProfile } from "./components/UserProfile";
 import { HelmetProvider } from "react-helmet-async";
@@ -36,8 +35,6 @@ import ManageMagazines from "./pages/ManageMagazines";
 import ManageSponsors from "./pages/ManageSponsors";
 import Contact from "./pages/ContactUs";
 import UserManagement from "./pages/UserManagement";
-import AddressBook from "@/pages/AddressBook";
-import OrderDetails from "@/pages/OrderDetails";
 
 const queryClient = new QueryClient();
 
@@ -171,8 +168,6 @@ const App = () => (
                             <UserManagement />
                           </ProtectedRoute>
                         } />
-                        <Route path="/address-book" element={<AddressBook />} />
-                        <Route path="/orders/:orderId" element={<OrderDetails />} />
                         {/* Redirect old admin routes */}
                         <Route path="/maker-admin-access" element={<Navigate to="/login" />} />
                         <Route path="/admin-login" element={<Navigate to="/login" />} />
