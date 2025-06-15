@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -33,6 +32,20 @@ export default function Payment() {
       navigate("/payment-success");
     }, 700);
   };
+
+  // New: Handle missing location.state
+  if (!order && !course) {
+    return (
+      <div className="container max-w-md mx-auto py-10">
+        <div className="rounded-lg border p-6 bg-muted text-center">
+          <h2 className="text-xl font-bold mb-2 text-destructive">No Payment Information</h2>
+          <p className="mb-4">No order or course data was found.<br />Please go back to your cart or course page to proceed with a purchase.</p>
+          <Button className="mx-2" onClick={() => navigate("/cart")}>Go to Cart</Button>
+          <Button variant="outline" className="mx-2" onClick={() => navigate("/courses")}>Browse Courses</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container max-w-md mx-auto py-10">
