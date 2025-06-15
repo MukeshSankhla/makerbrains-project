@@ -12,7 +12,16 @@ export default function AddressBook() {
   });
   function startEdit(a: Address) {
     setEdit(a);
-    setForm({ ...a });
+    setForm({
+      name: a.name || "",
+      line1: a.line1 || "",
+      line2: a.line2 || "",
+      city: a.city || "",
+      state: a.state || "",
+      zip: a.zip || "",
+      country: a.country || "",
+      phone: a.phone || ""
+    });
   }
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
