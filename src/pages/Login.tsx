@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Github } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
-import Header from "@/components/Header";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Login = () => {
@@ -78,7 +77,6 @@ const Login = () => {
   if (showResetForm) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
         
         <div className="flex items-center justify-center py-12 px-4">
           <Card className="w-full max-w-md">
@@ -125,14 +123,9 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-      
-      <div className="flex items-center justify-center py-12 px-4">
+      <div className="flex items-center justify-center py-2 px-2">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mx-auto mb-4">
-              <span className="text-white font-bold text-lg">MB</span>
-            </div>
             <CardTitle className="text-2xl">
               {isLogin ? "Welcome Back" : "Join MakerBrains"}
             </CardTitle>
