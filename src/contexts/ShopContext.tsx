@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export interface Product {
@@ -37,36 +36,8 @@ interface ShopContextType {
 
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
 
-// Mock data for products (until Supabase table is created)
-const mockProducts: Product[] = [
-  {
-    id: 1,
-    title: "Arduino Smart Home Kit",
-    description: "Complete kit to build a smart home automation system with Arduino",
-    features: ["Arduino Uno R3", "ESP8266 WiFi Module", "Relay Module", "Temperature Sensor"],
-    specs: ["Voltage: 5V", "Current: 2A", "WiFi: 802.11 b/g/n"],
-    price: 89.99,
-    image: "/placeholder.svg",
-    stock: 15,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: 2,
-    title: "Raspberry Pi IoT Starter Kit",
-    description: "Everything you need to start your IoT journey with Raspberry Pi",
-    features: ["Raspberry Pi 4", "Camera Module", "LED Matrix", "Breadboard"],
-    specs: ["RAM: 4GB", "Storage: 32GB MicroSD", "GPIO: 40 pins"],
-    price: 129.99,
-    image: "/placeholder.svg",
-    stock: 8,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  }
-];
-
 export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
 
   // Load cart from localStorage on mount
@@ -84,10 +55,9 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProducts = async () => {
     try {
-      // For now, just use mock data
-      // TODO: Replace with Supabase call once products table is created
-      console.log('Using mock product data - create products table in Supabase to enable database storage');
-      setProducts(mockProducts);
+      // No more mock data here.
+      // You should implement fetching from your actual backend (e.g., Firestore/Supabase) here when ready.
+      setProducts([]); // For now this just empties the products list; actual fetch is done by pages.
     } catch (error) {
       console.error('Error fetching products:', error);
     }
@@ -95,16 +65,11 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const addProduct = async (productData: Omit<Product, 'id' | 'created_at' | 'updated_at'>) => {
     try {
-      // For now, add to mock data
-      // TODO: Replace with Supabase call once products table is created
-      const newProduct: Product = {
-        ...productData,
-        id: Date.now(), // Simple ID generation for mock data
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      setProducts(prev => [newProduct, ...prev]);
-      console.log('Product added to mock data - create products table in Supabase to enable database storage');
+      // In real use, add to backend. For now, do nothing.
+      // This demo context will not add to local products, only admin-panel should manage.
+      //
+      // After actual implementation, call setProducts after fetching updated list from db.
+      console.log('addProduct called for', productData.title);
     } catch (error) {
       console.error('Error adding product:', error);
       throw error;
@@ -113,11 +78,8 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateProduct = async (product: Product) => {
     try {
-      // For now, update in mock data
-      // TODO: Replace with Supabase call once products table is created
-      const updatedProduct = { ...product, updated_at: new Date().toISOString() };
-      setProducts(prev => prev.map(p => p.id === product.id ? updatedProduct : p));
-      console.log('Product updated in mock data - create products table in Supabase to enable database storage');
+      // In real use, update in backend.
+      console.log('updateProduct called for', product.title);
     } catch (error) {
       console.error('Error updating product:', error);
       throw error;
@@ -126,10 +88,8 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const deleteProduct = async (id: number) => {
     try {
-      // For now, delete from mock data
-      // TODO: Replace with Supabase call once products table is created
-      setProducts(prev => prev.filter(p => p.id !== id));
-      console.log('Product deleted from mock data - create products table in Supabase to enable database storage');
+      // In real use, delete from backend.
+      console.log('deleteProduct called for id', id);
     } catch (error) {
       console.error('Error deleting product:', error);
       throw error;
