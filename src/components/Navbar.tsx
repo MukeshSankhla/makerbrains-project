@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
@@ -10,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { FaRegEnvelope } from "react-icons/fa";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
+import { ProfileDropdown } from "./ProfileDropdown";
 
 export function Navbar() {
   const { user, isAdmin, logout } = useAuth();
@@ -42,7 +42,6 @@ export function Navbar() {
             className="h-10 block dark:hidden"
           />
         </Link>
-
         {/* Mobile Menu Button */}
         <Button 
           variant="ghost" 
@@ -52,31 +51,11 @@ export function Navbar() {
         >
           {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
-
         {/* Right Side Navigation Items */}
         <div className="hidden md:flex ml-auto items-center space-x-1">
           {user ? (
             <>
-              <Link to="/profile" className="flex items-center gap-2 px-3 py-1 rounded-md hover:bg-accent focus-visible:ring-2 focus-visible:ring-primary transition group">
-                <Avatar className="w-8 h-8 ring-2 ring-primary/40 shadow group-hover:scale-105 transition-transform">
-                  <AvatarImage src={user.photoURL || undefined} alt={user.displayName || user.email || "User"} />
-                  <AvatarFallback>
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm font-semibold text-foreground max-w-[100px] truncate">{user.displayName || user.email}</span>
-              </Link>
-              {isAdmin && (
-                <Link to="/admin">
-                  <Button variant="ghost" size="icon" className="relative">
-                    <Shield className="h-5 w-5" />
-                    <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
-                  </Button>
-                </Link>
-              )}
-              <Button variant="ghost" size="icon" onClick={handleLogout}>
-                <LogOut className="h-5 w-5" />
-              </Button>
+              <ProfileDropdown onLogout={handleLogout} />
             </>
           ) : (
             <Link to="/login">
@@ -86,7 +65,6 @@ export function Navbar() {
           <ThemeToggle />
         </div>
       </div>
-
       {/* Mobile Menu */}
       {isMenuOpen && (
         <motion.div 
@@ -109,36 +87,9 @@ export function Navbar() {
                 Contact
               </Button>
             </Link>
-            
             {user ? (
               <>
-                <div className="px-3 py-2 text-sm text-muted-foreground flex items-center gap-2">
-                  <Avatar className="w-7 h-7 border border-border">
-                    <AvatarImage src={user.photoURL || undefined} alt={user.displayName || user.email || "User"} />
-                    <AvatarFallback>
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="truncate max-w-[120px]">{user.displayName || user.email}</span>
-                </div>
-                <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start">
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
-                  </Button>
-                </Link>
-                {isAdmin && (
-                  <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start">
-                      <Shield className="mr-2 h-4 w-4" />
-                      Admin Panel
-                    </Button>
-                  </Link>
-                )}
-                <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </Button>
+                <ProfileDropdown onLogout={handleLogout} />
               </>
             ) : (
               <Link to="/login" onClick={() => setIsMenuOpen(false)}>
@@ -147,7 +98,6 @@ export function Navbar() {
                 </Button>
               </Link>
             )}
-            
             <div className="pt-2 flex justify-center">
               <ThemeToggle />
             </div>

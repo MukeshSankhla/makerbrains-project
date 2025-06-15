@@ -1,4 +1,3 @@
-
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { User } from 'firebase/auth';
@@ -92,4 +91,21 @@ export const updateUserRole = async (uid: string, role: 'admin' | 'user') => {
     console.error('Error updating user role:', error);
     throw error;
   }
+};
+
+// Cloud Storage helpers (assuming Firebase Storage configured elsewhere):
+export const uploadProfilePhoto = async (uid: string, file: File) => {
+  // Replace with your actual storage logic; placeholder implementation
+  // Assume returns the URL of the uploaded image.
+  // To be replaced with Firebase Storage SDK or API endpoint call.
+  return new Promise<string>((resolve) => {
+    setTimeout(() => resolve(URL.createObjectURL(file)), 600);
+  });
+};
+
+export const uploadProfileBackground = async (uid: string, file: File) => {
+  // Replace with actual upload logic; placeholder implementation.
+  return new Promise<string>((resolve) => {
+    setTimeout(() => resolve(URL.createObjectURL(file)), 600);
+  });
 };

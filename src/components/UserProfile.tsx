@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,12 +9,20 @@ import { useAuth } from '@/contexts/AuthContext';
 import { updateUserProfile } from '@/services/firebaseUserService';
 import { useToast } from '@/hooks/use-toast';
 import { User as UserIcon, Mail, MapPin, Info, Edit } from 'lucide-react';
+import { uploadProfilePhoto, uploadProfileBackground } from '@/services/firebaseUserService';
 
 export const UserProfile = () => {
   const { user, userProfile } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
+  // New image states
+  const [profilePhoto, setProfilePhoto] = useState<string | undefined>(user?.photoURL || userProfile?.photoURL);
+  const [bgPhoto, setBgPhoto] = useState<string | undefined>(userProfile?.backgroundURL);
+
+  const profileInputRef = useRef<HTMLInputElement>(null);
+  const bgInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     fullName: userProfile?.fullName || '',
@@ -28,6 +35,36 @@ export const UserProfile = () => {
       website: userProfile?.socialMedia?.website || '',
     },
   });
+
+  // Handlers for image uploads
+  const handleProfilePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    setLoading(true);
+    try {
+      const url = await uploadProfilePhoto(user.uid, file);
+      setProfilePhoto(url);
+      toast({ title: "Profile photo updated" });
+      setFormData(f => ({ ...f, photoURL: url }));
+    } catch {
+      toast({ title: "Failed to upload photo", variant: "destructive" });
+    }
+    setLoading(false);
+  };
+
+  const handleBgPhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    setLoading(true);
+    try {
+      const url = await uploadProfileBackground(user.uid, file);
+      setBgPhoto(url);
+      toast({ title: "Background photo updated" });
+    } catch {
+      toast({ title: "Failed to upload background", variant: "destructive" });
+    }
+    setLoading(false);
+  };
 
   const handleEdit = () => setIsEditing(true);
   const handleCancel = () => {
@@ -75,27 +112,62 @@ export const UserProfile = () => {
 
   return (
     <div className="max-w-2xl mx-auto pb-10 space-y-6">
+      <div className="relative rounded-lg overflow-hidden">
+        {bgPhoto ? (
+          <img
+            src={bgPhoto}
+            className="w-full h-44 object-cover"
+            alt="Background"
+          />
+        ) : (
+          <div className="w-full h-44 bg-gradient-to-r from-primary/60 to-secondary/60"></div>
+        )}
+        {isEditing && (
+          <>
+            <button
+              type="button"
+              onClick={() => bgInputRef.current?.click()}
+              className="absolute top-3 right-3 bg-background/80 p-2 rounded-full shadow hover:bg-primary/90 transition-colors z-10"
+            >
+              <Edit className="h-5 w-5 text-primary" />
+            </button>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              ref={bgInputRef}
+              onChange={handleBgPhotoChange}
+            />
+          </>
+        )}
+      </div>
       <Card className="p-0 overflow-visible">
-        <CardHeader className="bg-gradient-to-r from-primary/90 to-secondary/70 rounded-t-lg py-8 flex flex-col items-center relative">
+        <CardHeader className="flex flex-col items-center relative -mt-14">
           <div className="relative">
-            <Avatar className="w-24 h-24 shadow-lg border-4 border-background -mt-12 mb-3 animate-scale-in">
-              <AvatarImage src={user.photoURL || undefined} alt={userProfile.fullName || 'Avatar'} />
+            <Avatar className="w-28 h-28 border-4 border-background shadow-lg animate-scale-in bg-background">
+              <AvatarImage src={profilePhoto || undefined} alt={userProfile.fullName || 'Avatar'} />
               <AvatarFallback>
                 <UserIcon className="w-10 h-10 text-muted-foreground" />
                 <span className="sr-only">{fallbackInitial}</span>
               </AvatarFallback>
             </Avatar>
-            {/* Edit icon overlay */}
-            {!isEditing && (
-              <Button
-                size="icon"
-                variant="secondary"
-                aria-label="Edit Profile"
-                className="absolute bottom-1 right-0 rounded-full shadow-lg border bg-background/80 hover:bg-primary/90 transition-colors animate-scale-in"
-                onClick={handleEdit}
-              >
-                <Edit className="h-5 w-5 text-primary" />
-              </Button>
+            {isEditing && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => profileInputRef.current?.click()}
+                  className="absolute bottom-3 right-2 bg-background/80 p-2 rounded-full shadow hover:bg-primary/90 transition-colors z-10"
+                >
+                  <Edit className="h-4 w-4 text-primary" />
+                </button>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  ref={profileInputRef}
+                  onChange={handleProfilePhotoChange}
+                />
+              </>
             )}
           </div>
           <div className="pt-3 text-center">
@@ -123,31 +195,54 @@ export const UserProfile = () => {
                   <span>{userProfile.address || <span className="text-muted-foreground italic">No address</span>}</span>
                 </div>
               </div>
-              <div>
-                <Label>Social Media</Label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                  <div>
-                    <Label>Twitter</Label>
-                    <span className="block break-words">{userProfile.socialMedia?.twitter || <span className="text-muted-foreground italic">N/A</span>}</span>
-                  </div>
-                  <div>
-                    <Label>LinkedIn</Label>
-                    <span className="block break-words">{userProfile.socialMedia?.linkedin || <span className="text-muted-foreground italic">N/A</span>}</span>
-                  </div>
-                  <div>
-                    <Label>GitHub</Label>
-                    <span className="block break-words">{userProfile.socialMedia?.github || <span className="text-muted-foreground italic">N/A</span>}</span>
-                  </div>
-                  <div>
-                    <Label>Website</Label>
-                    <span className="block break-words">{userProfile.socialMedia?.website || <span className="text-muted-foreground italic">N/A</span>}</span>
+              {/* Only show if at least one social media is filled */}
+              {(userProfile.socialMedia?.twitter || userProfile.socialMedia?.linkedin ||
+                userProfile.socialMedia?.github || userProfile.socialMedia?.website) && (
+                <div>
+                  <Label>Social Media</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                    {userProfile.socialMedia?.twitter && (
+                      <div>
+                        <Label>Twitter</Label>
+                        <span className="block break-words">{userProfile.socialMedia.twitter}</span>
+                      </div>
+                    )}
+                    {userProfile.socialMedia?.linkedin && (
+                      <div>
+                        <Label>LinkedIn</Label>
+                        <span className="block break-words">{userProfile.socialMedia.linkedin}</span>
+                      </div>
+                    )}
+                    {userProfile.socialMedia?.github && (
+                      <div>
+                        <Label>GitHub</Label>
+                        <span className="block break-words">{userProfile.socialMedia.github}</span>
+                      </div>
+                    )}
+                    {userProfile.socialMedia?.website && (
+                      <div>
+                        <Label>Website</Label>
+                        <span className="block break-words">{userProfile.socialMedia.website}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
+              )}
               <div className="flex justify-between items-center pt-4">
                 <div className="text-sm text-muted-foreground">
                   Role: <span className="font-medium capitalize">{userProfile.role}</span>
                 </div>
+                {!isEditing && (
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    aria-label="Edit Profile"
+                    className="rounded-full shadow-lg border bg-background/80 hover:bg-primary/90 transition-colors animate-scale-in"
+                    onClick={handleEdit}
+                  >
+                    <Edit className="h-5 w-5 text-primary" />
+                  </Button>
+                )}
               </div>
             </div>
           ) : (
@@ -283,3 +378,5 @@ export const UserProfile = () => {
     </div>
   );
 };
+
+// NOTE: src/components/UserProfile.tsx is 286 lines long! Consider asking to refactor into smaller files for maintainability.
