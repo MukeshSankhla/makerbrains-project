@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
@@ -7,6 +8,7 @@ import logoLight from "/src/images/logo_1.png";
 import logoDark from "/src/images/logo_2.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { FaRegEnvelope } from "react-icons/fa";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 
 export function Navbar() {
@@ -21,6 +23,9 @@ export function Navbar() {
     await logout();
     setIsMenuOpen(false);
   };
+
+  // Use initial/fallback for avatar
+  const initials = user?.displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "?";
 
   return (
     <nav className="border-b border-border sticky top-0 z-50 bg-background/80 backdrop-blur-md">
@@ -52,13 +57,14 @@ export function Navbar() {
         <div className="hidden md:flex ml-auto items-center space-x-1">
           {user ? (
             <>
-              <span className="text-sm text-muted-foreground mr-2">
-                {user.displayName || user.email}
-              </span>
-              <Link to="/profile">
-                <Button variant="ghost" size="icon">
-                  <User className="h-5 w-5" />
-                </Button>
+              <Link to="/profile" className="flex items-center gap-2 px-3 py-1 rounded-md hover:bg-accent focus-visible:ring-2 focus-visible:ring-primary transition group">
+                <Avatar className="w-8 h-8 ring-2 ring-primary/40 shadow group-hover:scale-105 transition-transform">
+                  <AvatarImage src={user.photoURL || undefined} alt={user.displayName || user.email || "User"} />
+                  <AvatarFallback>
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-sm font-semibold text-foreground max-w-[100px] truncate">{user.displayName || user.email}</span>
               </Link>
               {isAdmin && (
                 <Link to="/admin">
@@ -106,8 +112,14 @@ export function Navbar() {
             
             {user ? (
               <>
-                <div className="px-3 py-2 text-sm text-muted-foreground">
-                  {user.displayName || user.email}
+                <div className="px-3 py-2 text-sm text-muted-foreground flex items-center gap-2">
+                  <Avatar className="w-7 h-7 border border-border">
+                    <AvatarImage src={user.photoURL || undefined} alt={user.displayName || user.email || "User"} />
+                    <AvatarFallback>
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="truncate max-w-[120px]">{user.displayName || user.email}</span>
                 </div>
                 <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start">

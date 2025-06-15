@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { updateUserProfile } from '@/services/firebaseUserService';
 import { useToast } from '@/hooks/use-toast';
@@ -69,51 +70,55 @@ export const UserProfile = () => {
 
   if (!user || !userProfile) return null;
 
+  // Initials fallback for avatar
+  const fallbackInitial = userProfile.fullName?.charAt(0).toUpperCase() || userProfile.email?.charAt(0).toUpperCase() || '?';
+
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <Card>
-        <CardHeader className="flex flex-row justify-between items-center">
-          <CardTitle className="flex items-center gap-2">
-            <UserIcon className="h-5 w-5" />
-            User Profile
-          </CardTitle>
-          {!isEditing && (
-            <Button
-              size="icon"
-              variant="ghost"
-              aria-label="Edit Profile"
-              onClick={handleEdit}
-            >
-              <Edit className="h-5 w-5" />
-            </Button>
-          )}
+    <div className="max-w-2xl mx-auto pb-10 space-y-6">
+      <Card className="p-0 overflow-visible">
+        <CardHeader className="bg-gradient-to-r from-primary/90 to-secondary/70 rounded-t-lg py-8 flex flex-col items-center relative">
+          <div className="relative">
+            <Avatar className="w-24 h-24 shadow-lg border-4 border-background -mt-12 mb-3 animate-scale-in">
+              <AvatarImage src={user.photoURL || undefined} alt={userProfile.fullName || 'Avatar'} />
+              <AvatarFallback>
+                <UserIcon className="w-10 h-10 text-muted-foreground" />
+                <span className="sr-only">{fallbackInitial}</span>
+              </AvatarFallback>
+            </Avatar>
+            {/* Edit icon overlay */}
+            {!isEditing && (
+              <Button
+                size="icon"
+                variant="secondary"
+                aria-label="Edit Profile"
+                className="absolute bottom-1 right-0 rounded-full shadow-lg border bg-background/80 hover:bg-primary/90 transition-colors animate-scale-in"
+                onClick={handleEdit}
+              >
+                <Edit className="h-5 w-5 text-primary" />
+              </Button>
+            )}
+          </div>
+          <div className="pt-3 text-center">
+            <h2 className="text-2xl font-bold text-foreground">{userProfile.fullName || "No Name Set"}</h2>
+            <div className="flex justify-center items-center mt-1 text-muted-foreground gap-2 text-base">
+              <Mail className="w-4 h-4" />
+              <span>{userProfile.email}</span>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6 pb-8 px-4 md:px-8 bg-background rounded-b-lg shadow-inner">
           {!isEditing ? (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label>Email</Label>
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    <span>{userProfile.email}</span>
-                  </div>
-                </div>
-                <div>
-                  <Label>Full Name</Label>
-                  <span>{userProfile.fullName}</span>
-                </div>
-              </div>
+            <div className="space-y-5">
               <div>
                 <Label>Bio/Info</Label>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mt-1">
                   <Info className="h-4 w-4 text-muted-foreground" />
-                  <span>{userProfile.info || <span className="text-muted-foreground italic">No bio</span>}</span>
+                  <span className="whitespace-pre-line">{userProfile.info || <span className="text-muted-foreground italic">No bio</span>}</span>
                 </div>
               </div>
               <div>
                 <Label>Address</Label>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mt-1">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <span>{userProfile.address || <span className="text-muted-foreground italic">No address</span>}</span>
                 </div>
