@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
@@ -13,7 +14,8 @@ import { ProfileDropdown } from "./ProfileDropdown";
 import { useCart } from "@/hooks/useCart";
 
 export function Navbar() {
-  const { user } = useAuth();
+  // FIX: Add `logout` to destructure
+  const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { cart } = useCart();
   const location = useLocation();
