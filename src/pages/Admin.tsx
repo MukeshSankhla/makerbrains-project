@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,8 +8,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Header from "@/components/Header";
-import { Book, User, BarChart, Plus, Edit, Eye } from "lucide-react";
+import { Book, User, BarChart, Plus, Edit, Eye, ListCheck } from "lucide-react";
 import AdminOrderTable from "@/components/AdminOrderTable";
+import { useNavigate } from "react-router-dom";
 
 const Admin = () => {
   const [newProject, setNewProject] = useState({
@@ -38,10 +40,11 @@ const Admin = () => {
     // Here you would save to your database
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -72,9 +75,14 @@ const Admin = () => {
         {/* Main Content Tabs */}
         <Tabs defaultValue="projects" className="space-y-6">
           <TabsList>
-            <TabsTrigger value="projects">Projects</TabsTrigger>
+            <TabsTrigger value="projects">
+              Projects
+            </TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="orders">Orders</TabsTrigger>
+            <TabsTrigger value="orders">
+              <ListCheck className="inline mr-1 h-4 w-4" />
+              Orders
+            </TabsTrigger>
             <TabsTrigger value="create">Create Project</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
@@ -113,7 +121,6 @@ const Admin = () => {
               </CardContent>
             </Card>
           </TabsContent>
-
           <TabsContent value="create">
             <Card>
               <CardHeader>
@@ -190,7 +197,18 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="orders">
-            <AdminOrderTable />
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  <ListCheck className="inline mr-2 h-5 w-5" />
+                  Order Management
+                </CardTitle>
+                <CardDescription>View and update all orders</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <AdminOrderTable />
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="users">
@@ -206,7 +224,6 @@ const Admin = () => {
               </CardContent>
             </Card>
           </TabsContent>
-
           <TabsContent value="analytics">
             <Card>
               <CardHeader>

@@ -10,6 +10,7 @@ import { updateUserProfile } from '@/services/firebaseUserService';
 import { useToast } from '@/hooks/use-toast';
 import { User as UserIcon, Mail, Edit } from 'lucide-react';
 import { uploadProfilePhoto, uploadProfileBackground } from '@/services/firebaseUserService';
+import { useNavigate } from "react-router-dom";
 
 export const UserProfile = () => {
   const { user, userProfile, isAdmin } = useAuth();
@@ -105,6 +106,8 @@ export const UserProfile = () => {
     }
   };
 
+  const navigate = useNavigate();
+
   if (!user || !userProfile) return null;
 
   // Initials fallback for avatar
@@ -121,7 +124,6 @@ export const UserProfile = () => {
               <Mail className="w-4 h-4" />
               {userProfile.email}
             </span>
-            {/* Role badge removed */}
           </div>
         </CardHeader>
         <CardContent className="pt-2 pb-8 px-5 md:px-10 bg-background rounded-b-xl">
@@ -196,7 +198,14 @@ export const UserProfile = () => {
                   )}
                 </div>
               </div>
-              <div className="flex justify-end pt-4">
+              <div className="flex justify-end pt-4 gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/address-book')}
+                  className="rounded-full border text-primary hover:bg-primary/10"
+                >
+                  Manage Address Book
+                </Button>
                 <Button
                   size="icon"
                   variant="secondary"

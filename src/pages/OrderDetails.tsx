@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { db } from "@/config/firebase";
@@ -7,13 +8,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { Address } from "@/types/address";
+import { ListOrdered, Timer, Clock, TrendingUp, TrendingDown } from "lucide-react";
 
 // Timeline UI
 const statuses = [
-  { key: "pending", label: "Order Placed" },
-  { key: "shipped", label: "Shipped" },
-  { key: "completed", label: "Delivered" },
-  { key: "cancelled", label: "Cancelled" }
+  { key: "pending", label: "Order Placed", icon: Clock },
+  { key: "shipped", label: "Shipped", icon: Timer },
+  { key: "completed", label: "Delivered", icon: TrendingUp },
+  { key: "cancelled", label: "Cancelled", icon: TrendingDown }
 ];
 
 export default function OrderDetails() {
@@ -68,27 +70,32 @@ export default function OrderDetails() {
         } className="ml-2 capitalize">{order.status}</Badge>
       </div>
       {/* Timeline */}
-      <div className="flex flex-col gap-2 mb-8">
+      <div className="flex flex-col gap-4 mb-8">
         {order.status === "cancelled" ? (
           <div className="flex gap-3 items-center">
-            <div className="w-4 h-4 rounded-full border-2 bg-red-500 border-red-500" />
+            <TrendingDown className="w-5 h-5 text-destructive" />
             <span className="text-destructive font-semibold">Cancelled</span>
           </div>
         ) : (
-          statuses.slice(0, 3).map((step, idx) => (
-            <div key={step.key} className="flex gap-3 items-center">
-              <div className={`w-4 h-4 rounded-full border-2 ${idx <= currentStatusIdx
-                ? "bg-primary border-primary"
-                : "bg-muted border-muted-foreground"
-              }`} />
-              <span className={idx <= currentStatusIdx
-                ? "text-primary font-semibold"
-                : "text-muted-foreground"
-              }>
-                {step.label}
-              </span>
-            </div>
-          ))
+          statuses.slice(0, 3).map((step, idx) => {
+            const Icon = step.icon;
+            return (
+              <div key={step.key} className="flex gap-3 items-center">
+                <div className={`w-6 h-6 flex items-center justify-center rounded-full border-2 ${idx <= currentStatusIdx
+                  ? "bg-primary border-primary text-white"
+                  : "bg-muted border-muted-foreground text-muted-foreground"
+                }`}>
+                  <Icon className="w-4 h-4" />
+                </div>
+                <span className={idx <= currentStatusIdx
+                  ? "text-primary font-semibold"
+                  : "text-muted-foreground"
+                }>
+                  {step.label}
+                </span>
+              </div>
+            );
+          })
         )}
       </div>
       {/* Details */}
