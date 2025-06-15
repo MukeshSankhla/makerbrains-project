@@ -6,7 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Edit, Trash2, Save, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-// We'll use a local state for demo; swap with a Context or API for real apps
+import { db } from "@/config/firebase";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 
 type Course = {
   id: string;
@@ -17,26 +25,35 @@ type Course = {
   instructor: string;
 };
 
-const mockCourses: Course[] = [
-  {
-    id: "C001",
-    title: "Arduino Basics",
-    description: "Learn the basics of Arduino and electronics.",
-    price: 1999,
-    image: "/placeholder.svg",
-    instructor: "Jane Doe"
-  }
-];
-
 const ManageCourses = () => {
-  const [courses, setCourses] = useState<Course[]>(mockCourses);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [isEditing, setIsEditing] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [editForm, setEditForm] = useState<Partial<Course>>({});
   const { toast } = useToast();
 
+  // Fetch courses from Firestore
+  const fetchCourses = async () => {
+    try {
+      const snap = await getDocs(collection(db, "courses"));
+      setCourses(
+        snap.docs.map((d) => ({
+          ...(d.data() as Omit<Course, "id">),
+          id: d.id,
+        }))
+      );
+    } catch (err) {
+      toast({
+        title: "Load error",
+        description: "Failed to load courses from database.",
+        variant: "destructive",
+      });
+    }
+  };
+
   useEffect(() => {
-    // Normally, fetch data here; using mockCourses for now
+    fetchCourses();
+    // eslint-disable-next-line
   }, []);
 
   const handleStartEdit = (course: Course) => {
@@ -51,35 +68,81 @@ const ManageCourses = () => {
       description: "",
       price: 0,
       image: "",
-      instructor: ""
+      instructor: "",
     });
   };
 
-  const handleSave = () => {
-    if (!editForm.title || !editForm.description || !editForm.price || !editForm.instructor) {
+  const handleSave = async () => {
+    if (
+      !editForm.title ||
+      !editForm.description ||
+      !editForm.price ||
+      !editForm.instructor
+    ) {
       toast({
         title: "Missing Fields",
         description: "Please fill in all required fields.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
-    if (isAdding) {
-      setCourses([{ ...(editForm as Course), id: Date.now().toString() }, ...courses]);
-      setIsAdding(false);
-      toast({ title: "Course Added", description: "Course successfully added." });
-    } else if (isEditing) {
-      setCourses(courses.map(c => c.id === isEditing ? { ...(editForm as Course), id: isEditing } : c));
-      setIsEditing(null);
-      toast({ title: "Course Updated", description: "Course successfully updated." });
+    try {
+      if (isAdding) {
+        await addDoc(collection(db, "courses"), {
+          title: editForm.title,
+          description: editForm.description,
+          price: editForm.price,
+          image: editForm.image || "",
+          instructor: editForm.instructor,
+        });
+        toast({
+          title: "Course Added",
+          description: "Course successfully added.",
+        });
+        setIsAdding(false);
+      } else if (isEditing) {
+        // Find Firestore course doc by id
+        const courseId = isEditing;
+        await updateDoc(doc(db, "courses", courseId), {
+          title: editForm.title,
+          description: editForm.description,
+          price: editForm.price,
+          image: editForm.image || "",
+          instructor: editForm.instructor,
+        });
+        toast({
+          title: "Course Updated",
+          description: "Course successfully updated.",
+        });
+        setIsEditing(null);
+      }
+      setEditForm({});
+      fetchCourses();
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to save course. Please try again.",
+        variant: "destructive",
+      });
     }
-    setEditForm({});
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this course?")) {
-      setCourses(courses.filter(c => c.id !== id));
-      toast({ title: "Course Deleted", description: "Course has been deleted." });
+      try {
+        await deleteDoc(doc(db, "courses", id));
+        toast({
+          title: "Course Deleted",
+          description: "Course has been deleted.",
+        });
+        fetchCourses();
+      } catch (err) {
+        toast({
+          title: "Error",
+          description: "Failed to delete course. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -90,7 +153,7 @@ const ManageCourses = () => {
   };
 
   const updateFormField = (field: keyof Course, value: any) => {
-    setEditForm(prev => ({ ...prev, [field]: value }));
+    setEditForm((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -111,28 +174,30 @@ const ManageCourses = () => {
             <Input
               placeholder="Course Title"
               value={editForm.title || ""}
-              onChange={(e) => updateFormField('title', e.target.value)}
+              onChange={(e) => updateFormField("title", e.target.value)}
             />
             <Textarea
               placeholder="Course Description"
               value={editForm.description || ""}
-              onChange={(e) => updateFormField('description', e.target.value)}
+              onChange={(e) => updateFormField("description", e.target.value)}
             />
             <Input
               type="number"
               placeholder="Price"
               value={editForm.price || ""}
-              onChange={(e) => updateFormField('price', parseInt(e.target.value) || 0)}
+              onChange={(e) =>
+                updateFormField("price", parseInt(e.target.value) || 0)
+              }
             />
             <Input
               placeholder="Image URL"
               value={editForm.image || ""}
-              onChange={(e) => updateFormField('image', e.target.value)}
+              onChange={(e) => updateFormField("image", e.target.value)}
             />
             <Input
               placeholder="Instructor Name"
               value={editForm.instructor || ""}
-              onChange={(e) => updateFormField('instructor', e.target.value)}
+              onChange={(e) => updateFormField("instructor", e.target.value)}
             />
             <div className="flex gap-2">
               <Button onClick={handleSave}>
@@ -154,24 +219,28 @@ const ManageCourses = () => {
               <CardContent className="p-4 space-y-4">
                 <Input
                   value={editForm.title || ""}
-                  onChange={(e) => updateFormField('title', e.target.value)}
+                  onChange={(e) => updateFormField("title", e.target.value)}
                 />
                 <Textarea
                   value={editForm.description || ""}
-                  onChange={(e) => updateFormField('description', e.target.value)}
+                  onChange={(e) =>
+                    updateFormField("description", e.target.value)
+                  }
                 />
                 <Input
                   type="number"
                   value={editForm.price || ""}
-                  onChange={(e) => updateFormField('price', parseInt(e.target.value) || 0)}
+                  onChange={(e) =>
+                    updateFormField("price", parseInt(e.target.value) || 0)
+                  }
                 />
                 <Input
                   value={editForm.image || ""}
-                  onChange={(e) => updateFormField('image', e.target.value)}
+                  onChange={(e) => updateFormField("image", e.target.value)}
                 />
                 <Input
                   value={editForm.instructor || ""}
-                  onChange={(e) => updateFormField('instructor', e.target.value)}
+                  onChange={(e) => updateFormField("instructor", e.target.value)}
                 />
                 <div className="flex gap-2">
                   <Button size="sm" onClick={handleSave}>
@@ -208,9 +277,9 @@ const ManageCourses = () => {
                     <Button size="sm" onClick={() => handleStartEdit(course)}>
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      size="sm" 
-                      variant="destructive" 
+                    <Button
+                      size="sm"
+                      variant="destructive"
                       onClick={() => handleDelete(course.id)}
                     >
                       <Trash2 className="h-4 w-4" />
