@@ -1,3 +1,5 @@
+
+// Import directly from the hooks folder instead of from the UI component
 import { useToast } from "@/hooks/use-toast"
 import {
   Toast,

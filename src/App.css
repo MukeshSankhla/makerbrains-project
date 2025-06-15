@@ -1,24 +1,31 @@
+
+/* Base styles */
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 0;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Animation keyframes */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
-@keyframes logo-spin {
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes spin-slow {
   from {
     transform: rotate(0deg);
   }
@@ -27,16 +34,26 @@
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* Utility classes */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
 
-.card {
-  padding: 2em;
+.animate-pulse-slow {
+  animation: pulse 3s ease-in-out infinite;
 }
 
-.read-the-docs {
-  color: #888;
+.animate-spin-slow {
+  animation: spin-slow 15s linear infinite;
+}
+
+.gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(90deg, #03a9f4, #4caf50);
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, rgba(3, 169, 244, 0.1), rgba(76, 175, 80, 0.1));
 }
