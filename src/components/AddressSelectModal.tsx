@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Dialog } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import useAddressBook from "@/hooks/useAddressBook";
 import type { Address } from "@/types/address";
@@ -17,8 +17,8 @@ export default function AddressSelectModal({ open, onClose, onSelect }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <Dialog.Content>
-        <Dialog.Title>Select a Shipping Address</Dialog.Title>
+      <DialogContent>
+        <DialogTitle>Select a Shipping Address</DialogTitle>
         <div className="space-y-4">
           {loading ? (
             <div>Loading...</div>
@@ -52,7 +52,7 @@ export default function AddressSelectModal({ open, onClose, onSelect }: Props) {
             Use Selected
           </Button>
         </div>
-      </Dialog.Content>
+      </DialogContent>
     </Dialog>
   );
 }

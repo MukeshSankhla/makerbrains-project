@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,7 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ModeToggle } from "@/components/ModeToggle";
+import { ModeToggle } from "@/components/mode-toggle";
 import { useCart } from "@/hooks/useCart";
 import { ShoppingCart } from "lucide-react";
 
