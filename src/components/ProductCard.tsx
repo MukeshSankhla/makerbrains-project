@@ -1,15 +1,26 @@
-
 import { Product, Course } from "@/types/shop";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+
 interface ProductCardProps {
   item: Product | Course;
   onAddToCart?: () => void;
+  onBuy?: () => void; // Only for course
+  isOwned?: boolean; // Only for course
+  type?: "product" | "course";
 }
-export function ProductCard({ item, onAddToCart }: ProductCardProps) {
+
+export function ProductCard({
+  item,
+  onAddToCart,
+  onBuy,
+  isOwned,
+  type
+}: ProductCardProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
+
   function handleAdd() {
     if (!user) {
       navigate("/login");
@@ -17,6 +28,15 @@ export function ProductCard({ item, onAddToCart }: ProductCardProps) {
     }
     onAddToCart && onAddToCart();
   }
+
+  function handleBuy() {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    onBuy && onBuy();
+  }
+
   return (
     <div className="rounded border bg-card text-card-foreground p-4 shadow hover:shadow-lg flex flex-col justify-between transition-colors">
       <img
@@ -37,7 +57,18 @@ export function ProductCard({ item, onAddToCart }: ProductCardProps) {
           ₹{item.price}
         </div>
       </div>
-      {onAddToCart && (
+      {/* Course flow: Buy Now/Access */}
+      {type === "course" && onBuy && (
+        <Button
+          variant={isOwned ? "default" : "outline"}
+          className="mt-3"
+          onClick={handleBuy}
+        >
+          {isOwned ? "Access" : "Buy Now"}
+        </Button>
+      )}
+      {/* Product flow: Add to Cart (unchanged) */}
+      {type !== "course" && onAddToCart && (
         <Button variant="outline" className="mt-3" onClick={handleAdd}>
           Add to Cart
         </Button>
