@@ -19,7 +19,6 @@ export interface UserProfile {
     website?: string;
   };
   role: 'admin' | 'user';
-  purchasedCourses: string[]; // <-- Add this line
   createdAt: Date;
   updatedAt: Date;
 }
@@ -37,7 +36,7 @@ export const createUserProfile = async (user: User, additionalData: Partial<User
   if (!userSnapshot.exists()) {
     const { displayName, email, photoURL } = user;
     const defaultRole = email === 'admin@makerbrains.com' ? 'admin' : 'user'; // You can modify this logic
-
+    
     let fullName = additionalData.fullName?.trim() || displayName || '';
 
     // Fallback if no name given
@@ -56,7 +55,6 @@ export const createUserProfile = async (user: User, additionalData: Partial<User
       address: '',
       socialMedia: {},
       role: defaultRole,
-      purchasedCourses: additionalData.purchasedCourses || [], // <-- Add fallback here
       createdAt: new Date(),
       updatedAt: new Date(),
       ...additionalData,
@@ -70,7 +68,7 @@ export const createUserProfile = async (user: User, additionalData: Partial<User
       throw error;
     }
   }
-
+  
   return userSnapshot.data() as UserProfile;
 };
 

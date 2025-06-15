@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,9 +12,6 @@ import { User as UserIcon, Mail, Edit, Book } from 'lucide-react';
 import { uploadProfilePhoto, uploadProfileBackground } from '@/services/firebaseUserService';
 import { useNavigate } from "react-router-dom";
 import { useAddressBook } from '@/hooks/useAddressBook';
-import { db } from '@/config/firebase';
-import { doc, getDoc } from "firebase/firestore";
-import { Course } from '@/types/shop';
 
 export const UserProfile = () => {
   const { user, userProfile, isAdmin } = useAuth();
@@ -46,29 +43,6 @@ export const UserProfile = () => {
 
   // Get the latest (or first, or defaulted) address of the user
   const latestAddress = addresses && addresses.length > 0 ? addresses[0] : null;
-
-  // Purchases state
-  const [myCourses, setMyCourses] = useState<Course[]>([]);
-
-  useEffect(() => {
-    const fetchCourses = async () => {
-      if (!userProfile?.purchasedCourses?.length) {
-        setMyCourses([]);
-        return;
-      }
-      // Fetch course details for each purchased ID
-      const coursePromises = userProfile.purchasedCourses.map(async (id: string) => {
-        const ref = doc(db, "courses", id);
-        const snap = await getDoc(ref);
-        if (snap.exists()) return snap.data() as Course;
-        return null;
-      });
-      const results = await Promise.all(coursePromises);
-      setMyCourses(results.filter(Boolean) as Course[]);
-    };
-    fetchCourses();
-    // eslint-disable-next-line
-  }, [userProfile?.purchasedCourses]);
 
   // Handlers for image uploads
   const handleProfilePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -384,34 +358,6 @@ export const UserProfile = () => {
           )}
         </CardContent>
       </Card>
-      {/* My Courses List */}
-      <div>
-        <Label className="font-semibold">My Courses</Label>
-        <div className="flex flex-col gap-3 mt-1">
-          {myCourses.length === 0 ? (
-            <span className="text-muted-foreground italic">No purchased courses</span>
-          ) : (
-            myCourses.map((c) => (
-              <div key={c.id} className="border rounded-lg p-4 flex flex-col md:flex-row justify-between items-center gap-3">
-                <div className="flex items-center gap-4">
-                  <img src={c.image} alt={c.title} className="w-16 h-16 rounded-md object-cover border" />
-                  <div>
-                    <div className="font-semibold">{c.title}</div>
-                    <div className="text-xs text-muted-foreground">{c.instructor}</div>
-                  </div>
-                </div>
-                <Button
-                  variant="outline"
-                  onClick={() => window.location.href = `/courses/${c.id}`}
-                  size="sm"
-                >
-                  View Course
-                </Button>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
     </div>
   );
 };
