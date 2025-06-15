@@ -71,6 +71,8 @@ const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+const ManageCourses = React.lazy(() => import("./pages/ManageCourses"));
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <HelmetProvider>
@@ -138,10 +140,11 @@ const App = () => (
                             <ManageProducts />
                           </ProtectedRoute>
                         } />
-                        {/* Added ManageCourses route */}
                         <Route path="/manage-courses" element={
                           <ProtectedRoute>
-                            <import("./pages/ManageCourses").then(mod => <mod.default />)}
+                            <Suspense fallback={<div>Loading...</div>}>
+                              <ManageCourses />
+                            </Suspense>
                           </ProtectedRoute>
                         } />
                         <Route path="/manage-recognitions" element={
