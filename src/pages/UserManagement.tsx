@@ -6,18 +6,19 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { getUserProfile, updateUserProfile } from "@/services/firebaseUserService";
 import { useToast } from "@/hooks/use-toast";
-import { User as UserIcon, Shield } from "lucide-react";
+import { User as UserIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/config/firebase";
 
-const ROLES = ["user", "admin"];
+const ROLES = ["user", "admin"] as const;
+type UserRole = typeof ROLES[number];
 
 interface UserRow {
   uid: string;
   email: string;
   fullName: string;
-  role: string;
+  role: UserRole;
   photoURL?: string;
 }
 
@@ -41,7 +42,7 @@ const UserManagement = () => {
           uid: data.uid,
           email: data.email,
           fullName: data.fullName || "",
-          role: data.role || "user",
+          role: (data.role === "admin" ? "admin" : "user") as UserRole,
           photoURL: data.photoURL || "",
         });
       });
@@ -57,18 +58,22 @@ const UserManagement = () => {
   };
 
   const handleChange = (field: keyof UserRow, value: string) => {
-    setEditData(prev => ({ ...prev, [field]: value }));
+    if (field === "role") {
+      setEditData(prev => ({ ...prev, role: value as UserRole }));
+    } else {
+      setEditData(prev => ({ ...prev, [field]: value }));
+    }
   };
 
   const handleSave = async (uid: string) => {
     try {
       await updateUserProfile(uid, {
         fullName: editData.fullName,
-        role: editData.role,
+        role: editData.role as UserRole,
       });
       setUsers(users =>
         users.map(u =>
-          u.uid === uid ? { ...u, fullName: editData.fullName!, role: editData.role! } : u
+          u.uid === uid ? { ...u, fullName: editData.fullName!, role: editData.role as UserRole } : u
         )
       );
       setEditIndex(null);
