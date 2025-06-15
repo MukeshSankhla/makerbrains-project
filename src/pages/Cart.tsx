@@ -28,8 +28,7 @@ export default function Cart() {
 
   // Single cart totals calculation
   const subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
-  const tax = Math.round(subtotal * 0.18);
-  const total = subtotal + tax;
+  const total = subtotal; // only total, as price is inclusive of tax
 
   const handleCheckout = async () => {
     if (!user) {
@@ -211,10 +210,11 @@ export default function Cart() {
               <span>Subtotal</span>
               <span>{format(subtotal)}</span>
             </div>
-            <div className="flex justify-between text-sm">
+            {/* GST (18%) line removed */}
+            {/* <div className="flex justify-between text-sm">
               <span>GST (18%)</span>
               <span>{format(tax)}</span>
-            </div>
+            </div> */}
             <div className="flex justify-between text-lg font-bold border-t pt-2">
               <span>Total</span>
               <span className="text-primary">{format(total)}</span>
@@ -257,6 +257,7 @@ export default function Cart() {
               {loading ? "Processing..." : "Place Order"}
             </Button>
             <div className="mt-2 text-xs text-muted-foreground">
+              {/* Payment is simulated for now. Real payments coming soon! */}
               Payment is simulated for now. Real payments coming soon!
             </div>
           </div>

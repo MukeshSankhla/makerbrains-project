@@ -7,6 +7,13 @@ import { Printer } from "lucide-react";
 import { Order } from "@/types/shop";
 import { useCurrency } from "@/hooks/useCurrency";
 
+// Customize these company details as needed
+const COMPANY = {
+  logo: "/logo_1.png", // Adjust file name if company logo image is different
+  name: "Maker Brains",
+  address: "A-123, Business Park, Cityville, India - 100001",
+  contact: "contact@makerbrains.com | +91-98765-43210",
+};
 // Print utility: print a specific dom node
 function printRefContent(ref: React.RefObject<HTMLDivElement>) {
   if (ref.current) {
@@ -16,9 +23,13 @@ function printRefContent(ref: React.RefObject<HTMLDivElement>) {
         <style>
           body { font-family: Arial, sans-serif; }
           .print-header { font-size:1.25rem; font-weight:bold; margin-bottom:8px;}
+          .print-brand { display: flex; align-items: center; gap: 16px; margin-bottom:8px;}
+          .print-brand-logo { height: 48px; }
+          .print-brand-details { font-size: 13px; color: #222;}
           .print-table { border-collapse: collapse; width: 100%; margin-top: 8px;}
           .print-table th, .print-table td { border: 1px solid #ddd; padding: 5px; }
           .print-total { font-weight: bold; color: #27994C;}
+          .text-right { text-align: right;}
         </style>
       </head><body>`);
       printWindow.document.write(ref.current.innerHTML);
@@ -62,6 +73,15 @@ export const OrderAdminViewDialog: React.FC<Props> = ({ order, userName }) => {
           <DialogTitle>Order Full Details</DialogTitle>
         </DialogHeader>
         <div ref={billRef} className="space-y-4 print:p-0 print:m-0">
+          {/* Company header for print */}
+          <div className="print-brand" style={{ alignItems: "center", gap: 16, marginBottom: 8 }}>
+            <img src={COMPANY.logo} alt="logo" className="print-brand-logo" style={{ height: 48 }} />
+            <div className="print-brand-details" style={{ lineHeight: 1.4 }}>
+              <div style={{ fontSize: 18, fontWeight: "bold" }}>{COMPANY.name}</div>
+              <div>{COMPANY.address}</div>
+              <div>{COMPANY.contact}</div>
+            </div>
+          </div>
           <div className="print-header">Order Bill/Details</div>
           <div><b>Order ID:</b> {order.id.slice(-6).toUpperCase()}</div>
           <div><b>User Name:</b> {userName}</div>
