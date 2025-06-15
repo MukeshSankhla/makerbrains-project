@@ -5,6 +5,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/hooks/useCart";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/config/firebase";
+import { Link } from "react-router-dom";
 
 export default function Shop() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -24,11 +25,12 @@ export default function Shop() {
       <h1 className="text-2xl font-bold mb-4">Shop</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {products.map((p) => (
-          <ProductCard
-            key={p.id}
-            item={p}
-            onAddToCart={() => addItem({ ...p, quantity: 1 })}
-          />
+          <Link key={p.id} to={`/shop/${p.id}`}>
+            <ProductCard
+              item={p}
+              onAddToCart={() => addItem({ ...p, quantity: 1 })}
+            />
+          </Link>
         ))}
       </div>
     </div>

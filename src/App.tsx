@@ -38,6 +38,8 @@ import UserManagement from "./pages/UserManagement";
 import AddressBook from "./pages/AddressBook";
 import OrderDetails from "./pages/OrderDetails";
 import AdminOrders from "./pages/AdminOrders";
+import ProductDetail from "./pages/ProductDetail";
+import CourseDetail from "./pages/CourseDetail";
 
 const queryClient = new QueryClient();
 
@@ -104,7 +106,9 @@ const App = () => (
                           </div>
                         } />
                         <Route path="/shop" element={<Shop />} />
+                        <Route path="/shop/:productId" element={<ProductDetail />} />
                         <Route path="/courses" element={<CourseShop />} />
+                        <Route path="/courses/:courseId" element={<CourseDetail />} />
                         <Route path="/cart" element={<Cart />} />
                         <Route path="/orders" element={
                           <AuthenticatedRoute>
