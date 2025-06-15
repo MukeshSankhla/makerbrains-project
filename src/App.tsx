@@ -38,6 +38,7 @@ import UserManagement from "./pages/UserManagement";
 import AddressBook from "./pages/AddressBook";
 import OrderDetails from "./pages/OrderDetails";
 import AdminOrders from "./pages/AdminOrders";
+import GuideEditor from "./pages/GuideEditor";
 
 const queryClient = new QueryClient();
 
@@ -184,6 +185,11 @@ const App = () => (
                         <Route path="/admin-orders" element={
                           <ProtectedRoute>
                             <AdminOrders />
+                          </ProtectedRoute>
+                        } />
+                        <Route path="/guide-editor" element={
+                          <ProtectedRoute>
+                            <GuideEditor />
                           </ProtectedRoute>
                         } />
                         {/* Redirect old admin routes */}
