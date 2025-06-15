@@ -50,58 +50,14 @@ export default function Cart() {
     }
     if (!cart.length) return;
 
-    setLoading(true);
-
-    // --- [NEW] Copy full address details into order ---
-    // Remove id, userId, createdAt, updatedAt for safety.
-    const {
-      id, userId, createdAt, updatedAt,
-      ...addressCopy
-    } = selectedAddress;
-
-    const order: Omit<Order, "id"> & { shippingAddress: typeof addressCopy } = {
-      userId: user.uid,
+    // [NEW] Go to dummy payment page, passing cart/order info
+    // For simplicity, add a hardcoded shipping cost (can be dynamic later)
+    const shippingCost = 100; // INR, admin-chosen in future
+    const order = {
       items: cart,
-      totalAmount: total,
-      paymentProvider,
-      status: "pending",
-      createdAt: Date.now(),
-      email: user.email || "",
-      addressId: selectedAddress.id, // Keep for legacy/reference
-      shippingAddress: addressCopy, // Copy full address
+      shippingCost,
     };
-
-    try {
-      await addDoc(collection(db, "orders"), order);
-      clearCart();
-      toast({
-        title: "Order placed!",
-        description: "Thank you for shopping with us. Track your order in the orders section.",
-        variant: "default",
-      });
-      try {
-        await fetch("/api/sendOrderEmail", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            orderId: "new",
-            status: "pending",
-            email: user.email || ""
-          })
-        });
-      } catch (e) {
-        console.warn("Failed to send order email", e);
-      }
-      navigate("/orders");
-    } catch {
-      toast({
-        title: "Checkout failed",
-        description: "Failed to place order.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+    navigate("/payment", { state: { order, type: "order" } });
   };
 
   // Inline quantity change handlers
