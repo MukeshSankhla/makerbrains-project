@@ -9,7 +9,7 @@ interface AuthContextType {
   userProfile: UserProfile | null;
   loading: boolean;
   signInWithEmail: (email: string, password: string) => Promise<any>;
-  signUpWithEmail: (email: string, password: string) => Promise<any>;
+  signUpWithEmail: (email: string, password: string, fullName?: string) => Promise<any>;  // <-- changed here
   signInWithGoogle: () => Promise<any>;
   signInWithGithub: () => Promise<any>;
   resetPassword: (email: string) => Promise<void>;
@@ -22,7 +22,7 @@ const AuthContext = createContext<AuthContextType>({
   userProfile: null,
   loading: true,
   signInWithEmail: async () => {},
-  signUpWithEmail: async () => {},
+  signUpWithEmail: async () => {}, // changed signature
   signInWithGoogle: async () => {},
   signInWithGithub: async () => {},
   resetPassword: async () => {},
