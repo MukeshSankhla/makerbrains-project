@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,8 @@ import { User as UserIcon, Mail, Edit, Book } from 'lucide-react';
 import { uploadProfilePhoto, uploadProfileBackground } from '@/services/firebaseUserService';
 import { useNavigate } from "react-router-dom";
 import { useAddressBook } from '@/hooks/useAddressBook';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '@/config/firebase';
 
 export const UserProfile = () => {
   const { user, userProfile, isAdmin } = useAuth();
@@ -43,6 +45,27 @@ export const UserProfile = () => {
 
   // Get the latest (or first, or defaulted) address of the user
   const latestAddress = addresses && addresses.length > 0 ? addresses[0] : null;
+
+  // New: List user's purchased courses/resources from orders
+  const [myCourses, setMyCourses] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchMyCourses = async () => {
+      const q = query(collection(db, "orders"), where("userId", "==", user.uid));
+      const snap = await getDocs(q);
+      let courses: any[] = [];
+      snap.forEach(order => {
+        (order.data().items || []).forEach((item: any) => {
+          if (item.type === "course") {
+            courses.push(item);
+          }
+        });
+      });
+      setMyCourses(courses);
+    };
+    fetchMyCourses();
+  }, [user]);
 
   // Handlers for image uploads
   const handleProfilePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -343,6 +366,27 @@ export const UserProfile = () => {
                     />
                   </div>
                 </div>
+              </div>
+              <div className="mt-6">
+                <Label className="font-semibold">My Courses</Label>
+                <ul className="list-disc pl-5">
+                  {myCourses.length > 0 ? myCourses.map((c, idx) =>
+                    <li key={c.id || idx}>
+                      {c.title}
+                      <Button
+                        size="sm"
+                        variant="link"
+                        className="ml-2 px-1 py-0 h-7"
+                        onClick={() => {
+                          // Navigate to course access page/content (for now, course detail)
+                          window.open(`/course/${c.id}`, "_blank");
+                        }}
+                      >
+                        Access
+                      </Button>
+                    </li>
+                  ) : <li className="italic text-muted-foreground">No courses purchased yet.</li>}
+                </ul>
               </div>
               <div className="flex justify-between items-center pt-4">
                 <div className="flex gap-2">
