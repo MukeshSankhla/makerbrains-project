@@ -398,5 +398,3 @@ export const UserProfile = () => {
     </div>
   );
 };
-
-// NOTE: src/components/UserProfile.tsx is 377 lines long! Consider asking to refactor into smaller files for maintainability.
