@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, Shield, User as UserIcon } from "lucide-react";
+import { LogOut, Shield, User as UserIcon, ShoppingCart } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 
@@ -29,6 +29,12 @@ export function ProfileDropdown({ onLogout }: { onLogout: () => void }) {
           <Link to="/profile" className="flex items-center gap-2">
             <UserIcon className="h-4 w-4" />
             Profile
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/orders" className="flex items-center gap-2">
+            <ShoppingCart className="h-4 w-4" />
+            Orders
           </Link>
         </DropdownMenuItem>
         {isAdmin && (

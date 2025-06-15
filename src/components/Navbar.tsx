@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
@@ -60,9 +59,6 @@ export function Navbar() {
           <Link to="/courses" className={isActive("/courses") ? "font-bold text-primary" : "text-foreground"}>
             <Button variant="ghost" size="sm">Courses</Button>
           </Link>
-          <Link to="/orders" className={isActive("/orders") ? "font-bold text-primary" : "text-foreground"}>
-            <Button variant="ghost" size="sm">Orders</Button>
-          </Link>
           <Link to="/contact" className={isActive("/contact") ? "font-bold text-primary" : "text-foreground"}>
             <Button variant="ghost" size="sm">Contact</Button>
           </Link>
@@ -122,11 +118,6 @@ export function Navbar() {
             <Link to="/courses" onClick={() => setIsMenuOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">
                 Courses
-              </Button>
-            </Link>
-            <Link to="/orders" onClick={() => setIsMenuOpen(false)}>
-              <Button variant="ghost" className="w-full justify-start">
-                Orders
               </Button>
             </Link>
             <Link to="/cart" onClick={() => setIsMenuOpen(false)} className="relative">
