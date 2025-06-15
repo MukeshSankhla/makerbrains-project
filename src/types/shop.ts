@@ -30,6 +30,7 @@ export type Order = {
   items: CartItem[];
   totalAmount: number;
   paymentProvider: "stripe" | "razorpay" | "paypal";
-  status: "pending" | "paid" | "cancelled";
+  status: "pending" | "shipped" | "completed" | "cancelled";
   createdAt: number;
+  email?: string;
 };

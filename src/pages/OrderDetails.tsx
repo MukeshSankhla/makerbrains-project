@@ -56,25 +56,26 @@ export default function OrderDetails() {
       </div>
       {/* Timeline */}
       <div className="flex flex-col gap-2 mb-8">
-        {statuses.slice(0, order.status === "cancelled" ? 1 : 3).map((step, idx) => (
-          <div key={step.key} className="flex gap-3 items-center">
-            <div className={`w-4 h-4 rounded-full border-2 ${idx <= currentStatusIdx && order.status !== "cancelled"
-              ? "bg-primary border-primary"
-              : "bg-muted border-muted-foreground"
-            }`} />
-            <span className={idx <= currentStatusIdx && order.status !== "cancelled"
-              ? "text-primary font-semibold"
-              : "text-muted-foreground"
-            }>
-              {step.label}
-            </span>
-          </div>
-        ))}
-        {order.status === "cancelled" && (
+        {order.status === "cancelled" ? (
           <div className="flex gap-3 items-center">
             <div className="w-4 h-4 rounded-full border-2 bg-red-500 border-red-500" />
             <span className="text-destructive font-semibold">Cancelled</span>
           </div>
+        ) : (
+          statuses.slice(0, 3).map((step, idx) => (
+            <div key={step.key} className="flex gap-3 items-center">
+              <div className={`w-4 h-4 rounded-full border-2 ${idx <= currentStatusIdx
+                ? "bg-primary border-primary"
+                : "bg-muted border-muted-foreground"
+              }`} />
+              <span className={idx <= currentStatusIdx
+                ? "text-primary font-semibold"
+                : "text-muted-foreground"
+              }>
+                {step.label}
+              </span>
+            </div>
+          ))
         )}
       </div>
       {/* Details */}

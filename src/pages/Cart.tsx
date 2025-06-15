@@ -43,8 +43,7 @@ export default function Cart() {
       paymentProvider,
       status: "pending",
       createdAt: Date.now(),
-      // Optionally include user email here!
-      email: user.email || ""
+      email: user.email || "",
     };
 
     try {
