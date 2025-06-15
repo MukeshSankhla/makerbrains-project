@@ -1,15 +1,14 @@
-import { useNavigate } from "react-router-dom";
+
 import { useEffect, useState } from "react";
 import { Course } from "@/types/shop";
 import { ProductCard } from "@/components/ProductCard";
-import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/hooks/useCart";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/config/firebase";
 
 export default function CourseShop() {
   const [courses, setCourses] = useState<Course[]>([]);
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  const { addItem } = useCart();
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -27,7 +26,7 @@ export default function CourseShop() {
           <ProductCard
             key={c.id}
             item={c}
-            // No onAddToCart for courses: handled in detail
+            onAddToCart={() => addItem({ ...c, quantity: 1 })}
           />
         ))}
       </div>
