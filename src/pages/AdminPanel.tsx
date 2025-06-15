@@ -1,7 +1,8 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, Settings, List, User as UserIcon } from "lucide-react";
+import { PlusCircle, Settings, List, User as UserIcon, BookOpen } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -41,6 +42,32 @@ const AdminPanel = () => {
       ],
     },
     {
+      title: "Shop Products",
+      description: "Manage e-commerce shop products",
+      icon: List,
+      actions: [
+        {
+          label: "Manage Products",
+          icon: Settings,
+          link: "/manage-products",
+          color: "text-blue-600"
+        },
+      ],
+    },
+    {
+      title: "Courses",
+      description: "Manage courses for selling/assigning",
+      icon: BookOpen,
+      actions: [
+        {
+          label: "Manage Courses",
+          icon: Settings,
+          link: "/manage-courses",
+          color: "text-blue-600"
+        },
+      ],
+    },
+    {
       title: "Home Page Content",
       description: "Manage achievements, recognitions, magazine features and sponsors",
       icon: List,
@@ -56,7 +83,7 @@ const AdminPanel = () => {
     {
       title: "User Management",
       description: "View and modify users, roles and profiles",
-      icon: UserIcon, // fixed import here!
+      icon: UserIcon,
       actions: [
         {
           label: "Manage Users",
@@ -76,7 +103,6 @@ const AdminPanel = () => {
           Welcome, {userProfile?.fullName || userProfile?.email}
         </p>
       </div>
-      
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {adminOptions.map((option, index) => (
           <Card key={index} className="hover:shadow-lg">
@@ -111,3 +137,4 @@ const AdminPanel = () => {
 };
 
 export default AdminPanel;
+

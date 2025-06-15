@@ -138,6 +138,12 @@ const App = () => (
                             <ManageProducts />
                           </ProtectedRoute>
                         } />
+                        {/* Added ManageCourses route */}
+                        <Route path="/manage-courses" element={
+                          <ProtectedRoute>
+                            <import("./pages/ManageCourses").then(mod => <mod.default />)}
+                          </ProtectedRoute>
+                        } />
                         <Route path="/manage-recognitions" element={
                           <ProtectedRoute>
                             <ManageRecognitions />
