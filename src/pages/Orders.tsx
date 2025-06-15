@@ -1,9 +1,10 @@
-
 import { useEffect, useState } from "react";
 import { Order } from "@/types/shop";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/config/firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
+import { Link } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 
 export default function Orders() {
   const { user } = useAuth();
@@ -30,8 +31,16 @@ export default function Orders() {
         <ul className="divide-y">
           {orders.map((order) => (
             <li key={order.id} className="py-3">
-              <div className="mb-1 font-semibold">
-                Order #{order.id.slice(-5).toUpperCase()} - {order.status}
+              <div className="mb-1 font-semibold flex items-center gap-2">
+                <Link
+                  to={`/orders/${order.id}`}
+                  className="underline text-primary hover:opacity-80"
+                >
+                  Order #{order.id.slice(-5).toUpperCase()}
+                </Link>
+                <Badge variant={order.status === "completed" ? "default" : order.status === "cancelled" ? "destructive" : "secondary"}>
+                  {order.status}
+                </Badge>
               </div>
               <div className="mb-1 text-sm">
                 Placed on: {new Date(order.createdAt).toLocaleString()}
@@ -43,7 +52,9 @@ export default function Orders() {
                   </li>
                 ))}
               </ul>
-              <div className="font-bold text-green-700 mt-1">Total: ₹{order.totalAmount}</div>
+              <div className="font-bold text-green-700 mt-1">
+                Total: ₹{order.totalAmount}
+              </div>
             </li>
           ))}
         </ul>

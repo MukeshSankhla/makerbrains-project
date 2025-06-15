@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useCart } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { ShoppingCart, ShoppingBag } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
   const { cart, removeItem, clearCart, addItem } = useCart();
@@ -16,6 +16,7 @@ export default function Cart() {
   const [paymentProvider, setPaymentProvider] = useState<"stripe" | "razorpay" | "paypal">("stripe");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Single cart totals calculation
   const subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
@@ -41,7 +42,9 @@ export default function Cart() {
       totalAmount: total,
       paymentProvider,
       status: "pending",
-      createdAt: Date.now()
+      createdAt: Date.now(),
+      // Optionally include user email here!
+      email: user.email || ""
     };
 
     try {
@@ -49,9 +52,25 @@ export default function Cart() {
       clearCart();
       toast({
         title: "Order placed!",
-        description: "Thank you for shopping with us. (Payment simulated for now)",
-        variant: "default", // CHANGED from "success" to "default"
+        description: "Thank you for shopping with us. Track your order in the orders section.",
+        variant: "default",
       });
+      // After successful placement, try to send order confirmation email via backend function
+      try {
+        await fetch("/api/sendOrderEmail", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: "new", // Let backend find latest order by user if needed or update in AdminOrderTable status changes
+            status: "pending",
+            email: user.email || ""
+          })
+        });
+      } catch (e) {
+        // fail silently, already placed order
+        console.warn("Failed to send order email", e);
+      }
+      navigate("/orders");
     } catch {
       toast({
         title: "Checkout failed",
@@ -207,4 +226,3 @@ export default function Cart() {
     </div>
   );
 }
-
