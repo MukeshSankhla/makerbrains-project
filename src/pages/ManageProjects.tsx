@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Edit, Trash2, PlusCircle, Search } from "lucide-react";
-import { useAdminAuth } from "@/contexts/AdminAuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import SeoStructuredData from "@/components/SeoStructuredData";
@@ -19,17 +19,21 @@ const ManageProjects = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { isAdmin } = useAdminAuth();
+  const { user, isAdmin, loading } = useAuth();
 
-  // Redirect if not admin
+  // Redirect logic for auth and admin
   useEffect(() => {
-    if (!isAdmin) {
-      navigate("/maker-admin-access");
+    if (loading) return; // Wait for auth to resolve
+    if (!user) {
+      navigate("/login");
+    } else if (!isAdmin) {
+      navigate("/");
     }
-  }, [isAdmin, navigate]);
+  }, [loading, user, isAdmin, navigate]);
 
   // Fetch projects
   useEffect(() => {
+    if (!user || !isAdmin) return;
     const fetchProjects = async () => {
       try {
         const { data, error } = await supabase
@@ -52,7 +56,7 @@ const ManageProjects = () => {
     };
 
     fetchProjects();
-  }, [toast]);
+  }, [toast, user, isAdmin]);
 
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this project? This action cannot be undone.")) {
@@ -87,7 +91,11 @@ const ManageProjects = () => {
     project.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (!isAdmin) return null;
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
+
+  if (!user || !isAdmin) return null;
 
   return (
     <>
