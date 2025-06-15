@@ -229,9 +229,6 @@ export const UserProfile = () => {
                 </div>
               )}
               <div className="flex justify-between items-center pt-4">
-                <div className="text-sm text-muted-foreground">
-                  Role: <span className="font-medium capitalize">{userProfile.role}</span>
-                </div>
                 {!isEditing && (
                   <Button
                     size="icon"
@@ -359,9 +356,6 @@ export const UserProfile = () => {
                 </div>
               </div>
               <div className="flex justify-between items-center pt-4">
-                <div className="text-sm text-muted-foreground">
-                  Role: <span className="font-medium capitalize">{userProfile.role}</span>
-                </div>
                 <div className="flex gap-2">
                   <Button type="button" variant="ghost" onClick={handleCancel} disabled={loading}>
                     Cancel
