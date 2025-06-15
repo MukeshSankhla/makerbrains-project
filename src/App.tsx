@@ -19,7 +19,9 @@ import Story from "./pages/story";
 import Ach from "./pages/achivements";
 import CreateProject from "./pages/CreateProject";
 import Shop from "./pages/Shop";
+import CourseShop from "./pages/CourseShop";
 import Cart from "./pages/Cart";
+import Orders from "./pages/Orders";
 import ManageProducts from "./pages/ManageProducts";
 import { ProjectProvider } from "@/pages/ProjectContext";
 import { ShopProvider } from "@/contexts/ShopContext";
@@ -96,7 +98,13 @@ const App = () => (
                           </div>
                         } />
                         <Route path="/shop" element={<Shop />} />
+                        <Route path="/courses" element={<CourseShop />} />
                         <Route path="/cart" element={<Cart />} />
+                        <Route path="/orders" element={
+                          <AuthenticatedRoute>
+                            <Orders />
+                          </AuthenticatedRoute>
+                        } />
                         <Route path="/contact" element={<Contact />} />
                         <Route path="/legal" element={<Legal />} />
                         <Route path="/login" element={<Login />} />
