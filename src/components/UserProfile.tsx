@@ -358,6 +358,22 @@ export const UserProfile = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Purchased Courses Section */}
+      {userProfile.purchasedCourses && userProfile.purchasedCourses.length > 0 && (
+        <div className="mt-8 px-4 py-2 bg-muted/30 rounded shadow">
+          <h3 className="text-lg font-semibold mb-2">Purchased Courses</h3>
+          <ul className="space-y-2">
+            {userProfile.purchasedCourses.map((courseId: string) => (
+              <li key={courseId}>
+                <a href={`/course/${courseId}`} className="text-blue-600 hover:underline">
+                  View Course: {courseId}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };

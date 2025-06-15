@@ -38,6 +38,8 @@ import UserManagement from "./pages/UserManagement";
 import AddressBook from "./pages/AddressBook";
 import OrderDetails from "./pages/OrderDetails";
 import AdminOrders from "./pages/AdminOrders";
+import ProductDetail from "./pages/ProductDetail";
+import CourseDetail from "./pages/CourseDetail";
 
 const queryClient = new QueryClient();
 
@@ -106,6 +108,8 @@ const App = () => (
                         <Route path="/shop" element={<Shop />} />
                         <Route path="/courses" element={<CourseShop />} />
                         <Route path="/cart" element={<Cart />} />
+                        <Route path="/product/:id" element={<React.Suspense fallback={<div>Loading...</div>}><ProductDetail /></React.Suspense>} />
+                        <Route path="/course/:id" element={<React.Suspense fallback={<div>Loading...</div>}><CourseDetail /></React.Suspense>} />
                         <Route path="/orders" element={
                           <AuthenticatedRoute>
                             <Orders />
