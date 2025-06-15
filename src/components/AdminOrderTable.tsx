@@ -1,14 +1,28 @@
 
 import { useEffect, useState } from "react";
 import { db } from "@/config/firebase";
-import { collection, getDocs, updateDoc, doc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs, updateDoc, doc, deleteDoc, getDoc } from "firebase/firestore";
 import { Order } from "@/types/shop";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useCurrency } from "@/hooks/useCurrency";
 import { OrderAdminDialog } from "./OrderAdminDialog";
-import { Trash2, MessageSquare, Link as LinkIcon, Package as PackageIcon } from "lucide-react";
+import { Printer, Trash2, MessageSquare, Link as LinkIcon } from "lucide-react";
+import { OrderAdminViewDialog } from "./OrderAdminViewDialog";
+
+// Helper to cache/fetch users for table
+async function fetchUserNames(uids: string[]) {
+  const result: Record<string, string> = {};
+  const promises = uids.map(async (uid) => {
+    if (!uid) return;
+    const userSnap = await getDoc(doc(db, "users", uid));
+    if (userSnap.exists()) result[uid] = userSnap.data().fullName || uid;
+    else result[uid] = uid;
+  });
+  await Promise.all(promises);
+  return result;
+}
 
 const statusLabels: Record<Order["status"], string> = {
   pending: "Pending",
@@ -26,14 +40,20 @@ const statusVariants: Record<Order["status"], "default" | "secondary" | "destruc
 
 export default function AdminOrderTable() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [userNames, setUserNames] = useState<Record<string, string>>({});
   const [updating, setUpdating] = useState<string | null>(null);
   const { toast } = useToast();
   const { currency, format } = useCurrency();
 
+  // Fetch orders
   useEffect(() => {
     const fetchOrders = async () => {
       const snap = await getDocs(collection(db, "orders"));
-      setOrders(snap.docs.map(doc => ({ ...doc.data(), id: doc.id } as Order)));
+      const docs = snap.docs.map(doc => ({ ...doc.data(), id: doc.id } as Order));
+      setOrders(docs);
+      const uids = Array.from(new Set(docs.map(o => o.userId)));
+      const names = await fetchUserNames(uids);
+      setUserNames(names);
     };
     fetchOrders();
   }, []);
@@ -43,7 +63,6 @@ export default function AdminOrderTable() {
     setUpdating(orderId);
     await updateDoc(doc(db, "orders", orderId), { status });
     setOrders(orders => orders.map(o => (o.id === orderId ? { ...o, status } : o)));
-
     // Call API trigger to send email
     try {
       await fetch("/api/sendOrderEmail", {
@@ -54,7 +73,6 @@ export default function AdminOrderTable() {
     } catch (e) {
       console.error("Failed to trigger order email send:", e);
     }
-
     toast({
       title: "Order updated",
       description: `Order ${orderId.slice(-6).toUpperCase()} set to ${status}`,
@@ -99,19 +117,20 @@ export default function AdminOrderTable() {
           <thead>
             <tr className="bg-muted text-muted-foreground text-sm">
               <th className="p-2">Order ID</th>
-              <th className="p-2">User</th>
+              <th className="p-2">User Name</th>
               <th className="p-2">Placed</th>
               <th className="p-2">Amount</th>
               <th className="p-2">Status</th>
               <th className="p-2">Change Status</th>
               <th className="p-2">Admin Actions</th>
+              <th className="p-2">View/Print</th>
             </tr>
           </thead>
           <tbody>
             {orders.map(order => (
               <tr key={order.id}>
                 <td className="p-2 font-mono">{order.id.slice(-6).toUpperCase()}</td>
-                <td className="p-2">{order.userId}</td>
+                <td className="p-2">{userNames[order.userId] || order.userId}</td>
                 <td className="p-2">{new Date(order.createdAt).toLocaleString()}</td>
                 <td className="p-2 font-semibold">{format(order.totalAmount)}</td>
                 <td className="p-2">
@@ -164,6 +183,12 @@ export default function AdminOrderTable() {
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
+                </td>
+                <td className="p-2 flex gap-2 items-center">
+                  <OrderAdminViewDialog
+                    order={order}
+                    userName={userNames[order.userId] || order.userId}
+                  />
                 </td>
               </tr>
             ))}
