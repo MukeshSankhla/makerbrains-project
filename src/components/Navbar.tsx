@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
@@ -14,7 +13,7 @@ import { ProfileDropdown } from "./ProfileDropdown";
 import { useCart } from "@/hooks/useCart";
 
 export function Navbar() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { cart } = useCart();
   const location = useLocation();
@@ -23,17 +22,17 @@ export function Navbar() {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Make sure logout properly closes menu & logs out
-  const handleLogout = async () => {
-    await logout();
-    setIsMenuOpen(false);
-  };
-
   // Cart count
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   // Determine active route for highlight
   const isActive = (path: string) => location.pathname === path;
+
+  // Handle logout: closes menu & logs out
+  const handleLogout = async () => {
+    await logout();
+    setIsMenuOpen(false);
+  };
 
   return (
     <nav className="border-b border-border sticky top-0 z-50 bg-background/80 backdrop-blur-md">
@@ -65,17 +64,33 @@ export function Navbar() {
             <Button variant="ghost" size="sm">Contact</Button>
           </Link>
         </div>
-        {/* Cart Link */}
-        <Link to="/cart" className="ml-2 relative">
-          <Button variant="ghost" size="icon" className="p-2 relative" aria-label="Cart">
-            <ShoppingCart className="h-5 w-5" />
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs font-bold rounded-full px-1.5 py-0.5 shadow">
-                {cartCount}
-              </span>
-            )}
-          </Button>
-        </Link>
+        {/* Spacer */}
+        <div className="flex-1" />
+        {/* Right Side Navigation Items */}
+        <div className="hidden md:flex items-center space-x-2">
+          {user ? (
+            <ProfileDropdown onLogout={handleLogout} />
+          ) : (
+            <>
+              <Link to="/login">
+                <Button variant="outline">Sign In</Button>
+              </Link>
+              {/* Theme toggle for logged-out users */}
+              <ThemeToggle />
+            </>
+          )}
+          {/* Cart Icon - now always at far right */}
+          <Link to="/cart" className="relative">
+            <Button variant="ghost" size="icon" className="p-2 relative" aria-label="Cart">
+              <ShoppingCart className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs font-bold rounded-full px-1.5 py-0.5 shadow">
+                  {cartCount}
+                </span>
+              )}
+            </Button>
+          </Link>
+        </div>
         {/* Mobile Menu Button */}
         <Button
           variant="ghost"
@@ -85,17 +100,6 @@ export function Navbar() {
         >
           {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
-        {/* Right Side Navigation Items */}
-        <div className="hidden md:flex ml-auto items-center space-x-1">
-          {user ? (
-            <ProfileDropdown onLogout={handleLogout} />
-          ) : (
-            <Link to="/login">
-              <Button variant="outline">Sign In</Button>
-            </Link>
-          )}
-          <ThemeToggle />
-        </div>
       </div>
       {/* Mobile Menu */}
       {isMenuOpen && (
@@ -142,15 +146,15 @@ export function Navbar() {
             {user ? (
               <ProfileDropdown onLogout={handleLogout} />
             ) : (
-              <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                <Button variant="outline" className="w-full">
-                  Sign In
-                </Button>
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="outline" className="w-full">
+                    Sign In
+                  </Button>
+                </Link>
+                <ThemeToggle />
+              </div>
             )}
-            <div className="pt-2 flex justify-center">
-              <ThemeToggle />
-            </div>
           </div>
         </motion.div>
       )}

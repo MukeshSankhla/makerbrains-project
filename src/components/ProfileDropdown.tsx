@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, Shield, User as UserIcon, ShoppingCart } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function ProfileDropdown({ onLogout }: { onLogout: () => void }) {
   const { user, userProfile, isAdmin } = useAuth();
@@ -46,6 +47,10 @@ export function ProfileDropdown({ onLogout }: { onLogout: () => void }) {
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
+        <DropdownMenuItem className="flex items-center gap-2 px-2">
+          <ThemeToggle />
+          <span>Theme</span>
+        </DropdownMenuItem>
         <DropdownMenuItem className="flex items-center gap-2 text-destructive"
           onSelect={(e) => {
             e.preventDefault();
