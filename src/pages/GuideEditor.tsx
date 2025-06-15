@@ -23,7 +23,13 @@ const TOOLBAR_OPTIONS = [
   ["clean"],
 ];
 
+// Add this helper for unique step ids
+function generateStepId() {
+  return Math.random().toString(36).substring(2, 10) + Date.now();
+}
+
 type StepType = {
+  id: string;
   title: string;
   content: string;
 };
@@ -37,26 +43,25 @@ const GuideEditor: React.FC = () => {
   const [saving, setSaving] = useState(false);
 
   // Each step gets its own quill ref
-  const stepQuillRefs = useRef<Array<React.MutableRefObject<ReactQuill | null>>>(
-    []
-  );
+  const stepQuillRefs = useRef<Record<string, React.MutableRefObject<ReactQuill | null>>>({});
 
+  // We'll use refs by step id for a stable reference
   const [steps, setSteps] = useState<StepType[]>([
-    { title: "", content: "" },
+    { id: generateStepId(), title: "", content: "" },
   ]);
 
   // Fix: Ensure all step editors remain visible and can be edited independently
-  function getStepQuillRef(idx: number) {
+  function getStepQuillRef(stepId: string) {
     // Ensure an array element exists for each step
-    if (!stepQuillRefs.current[idx]) {
-      stepQuillRefs.current[idx] = React.createRef<ReactQuill>() as any;
+    if (!stepQuillRefs.current[stepId]) {
+      stepQuillRefs.current[stepId] = React.createRef<ReactQuill>() as any;
     }
-    return stepQuillRefs.current[idx];
+    return stepQuillRefs.current[stepId];
   }
 
   // Custom image upload handler (per editor)
   const imageHandler = useCallback(
-    (idx: number) => () => {
+    (stepId: string) => () => {
       const input = document.createElement("input");
       input.setAttribute("type", "file");
       input.setAttribute("accept", "image/*");
@@ -72,7 +77,7 @@ const GuideEditor: React.FC = () => {
           );
           await uploadBytes(storageRef, file);
           const url = await getDownloadURL(storageRef);
-          const quill = getStepQuillRef(idx).current?.getEditor();
+          const quill = getStepQuillRef(stepId).current?.getEditor();
           const range = quill?.getSelection(true);
           quill?.insertEmbed(range ? range.index : 0, "image", url);
         } catch (err) {
@@ -85,11 +90,11 @@ const GuideEditor: React.FC = () => {
   );
 
   // Quill modules config (per step)
-  const getStepModules = (idx: number) => ({
+  const getStepModules = (stepId: string) => ({
     toolbar: {
       container: TOOLBAR_OPTIONS,
       handlers: {
-        image: imageHandler(idx),
+        image: imageHandler(stepId),
       },
     },
     clipboard: { matchVisual: false },
@@ -140,40 +145,33 @@ const GuideEditor: React.FC = () => {
 
   // Add step
   const addStep = () => {
-    setSteps((prev) => [...prev, { title: "", content: "" }]);
+    setSteps((prev) => [
+      ...prev,
+      { id: generateStepId(), title: "", content: "" },
+    ]);
   };
 
   // Remove step
-  const removeStep = (idx: number) => {
-    setSteps((prev) => prev.filter((_, i) => i !== idx));
-    stepQuillRefs.current.splice(idx, 1);
+  const removeStep = (stepId: string) => {
+    setSteps((prev) => prev.filter((s) => s.id !== stepId));
+    delete stepQuillRefs.current[stepId];
   };
 
   // Move step up/down
-  const moveStep = (idx: number, direction: "up" | "down") => {
+  const moveStep = (stepId: string, direction: "up" | "down") => {
     setSteps((prev) => {
-      const newSteps = [...prev];
+      const idx = prev.findIndex((s) => s.id === stepId);
       if (
         (direction === "up" && idx === 0) ||
         (direction === "down" && idx === prev.length - 1)
       )
         return prev;
       const targetIdx = direction === "up" ? idx - 1 : idx + 1;
-      [newSteps[idx], newSteps[targetIdx]] = [
-        newSteps[targetIdx],
-        newSteps[idx],
-      ];
+      const newSteps = [...prev];
+      [newSteps[idx], newSteps[targetIdx]] = [newSteps[targetIdx], newSteps[idx]];
       return newSteps;
     });
-    // Move ref also
-    const refs = stepQuillRefs.current;
-    if (
-      (direction === "up" && idx === 0) ||
-      (direction === "down" && idx === refs.length - 1)
-    )
-      return;
-    const targetIdx = direction === "up" ? idx - 1 : idx + 1;
-    [refs[idx], refs[targetIdx]] = [refs[targetIdx], refs[idx]];
+    // No need to change refs, as they're keyed by id
   };
 
   return (
@@ -216,7 +214,7 @@ const GuideEditor: React.FC = () => {
             {/* All steps will appear, each with their own input editor */}
             {steps.map((step, idx) => (
               <div
-                key={idx}
+                key={step.id}
                 className="border rounded-md p-4 bg-muted/30 relative space-y-3 transition-shadow"
               >
                 <div className="flex items-center justify-between gap-2 mb-1">
@@ -230,7 +228,7 @@ const GuideEditor: React.FC = () => {
                       variant="ghost"
                       aria-label="Move Step Up"
                       disabled={idx === 0}
-                      onClick={() => moveStep(idx, "up")}
+                      onClick={() => moveStep(step.id, "up")}
                       tabIndex={-1}
                     >
                       <ArrowUp />
@@ -240,7 +238,7 @@ const GuideEditor: React.FC = () => {
                       variant="ghost"
                       aria-label="Move Step Down"
                       disabled={idx === steps.length - 1}
-                      onClick={() => moveStep(idx, "down")}
+                      onClick={() => moveStep(step.id, "down")}
                       tabIndex={-1}
                     >
                       <ArrowDown />
@@ -250,7 +248,7 @@ const GuideEditor: React.FC = () => {
                       variant="destructive"
                       aria-label="Remove Step"
                       disabled={steps.length === 1}
-                      onClick={() => removeStep(idx)}
+                      onClick={() => removeStep(step.id)}
                       tabIndex={-1}
                     >
                       <Trash2 />
@@ -263,24 +261,24 @@ const GuideEditor: React.FC = () => {
                   onChange={(e) => {
                     const val = e.target.value;
                     setSteps((prev) =>
-                      prev.map((s, i) =>
-                        i === idx ? { ...s, title: val } : s
+                      prev.map((s) =>
+                        s.id === step.id ? { ...s, title: val } : s
                       )
                     );
                   }}
                   className="mb-2"
                 />
                 <ReactQuill
-                  ref={getStepQuillRef(idx)}
+                  ref={getStepQuillRef(step.id)}
                   value={step.content}
                   onChange={(val) => {
                     setSteps((prev) =>
-                      prev.map((s, i) =>
-                        i === idx ? { ...s, content: val } : s
+                      prev.map((s) =>
+                        s.id === step.id ? { ...s, content: val } : s
                       )
                     );
                   }}
-                  modules={getStepModules(idx)}
+                  modules={getStepModules(step.id)}
                   theme="snow"
                   placeholder={`Write step ${idx + 1} content. Include formatted text, images, code...`}
                   style={{ minHeight: 160 }}
