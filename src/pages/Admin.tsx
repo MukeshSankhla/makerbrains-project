@@ -5,6 +5,7 @@ import { PlusCircle, Settings, List, User as UserIcon, BookOpen, Package } from 
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 
+// Show all admin options, including Order Management!
 const Admin = () => {
   const { isAdmin, userProfile } = useAuth();
   const navigate = useNavigate();
@@ -93,7 +94,7 @@ const Admin = () => {
         }
       ]
     },
-    // New option: Order Management
+    // Ensure Order Management card is actually present
     {
       title: "Order Management",
       description: "View & update orders placed in your shop",
