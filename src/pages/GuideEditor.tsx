@@ -42,15 +42,15 @@ const GuideEditor: React.FC = () => {
   const [summary, setSummary] = useState("");
   const [saving, setSaving] = useState(false);
 
+  // FIX: Initialize steps only ONCE, not on every render!
+  const [steps, setSteps] = useState<StepType[]>(() => [
+    { id: generateStepId(), title: "", content: "" },
+  ]);
+
   // Each step gets its own quill ref
   const stepQuillRefs = useRef<Record<string, React.MutableRefObject<ReactQuill | null>>>({});
 
   // We'll use refs by step id for a stable reference
-  const [steps, setSteps] = useState<StepType[]>([
-    { id: generateStepId(), title: "", content: "" },
-  ]);
-
-  // Fix: Ensure all step editors remain visible and can be edited independently
   function getStepQuillRef(stepId: string) {
     // Ensure an array element exists for each step
     if (!stepQuillRefs.current[stepId]) {
@@ -174,6 +174,9 @@ const GuideEditor: React.FC = () => {
     // No need to change refs, as they're keyed by id
   };
 
+  // --- DEBUGGING: log steps array to detect re-creation ---
+  console.log("Current steps:", steps);
+
   return (
     <div className="max-w-3xl mx-auto py-8">
       <Card>
@@ -212,6 +215,7 @@ const GuideEditor: React.FC = () => {
           </div>
           <div className="space-y-8">
             {/* All steps will appear, each with their own input editor */}
+            {/* Added key prop for each step by stable id */}
             {steps.map((step, idx) => (
               <div
                 key={step.id}
