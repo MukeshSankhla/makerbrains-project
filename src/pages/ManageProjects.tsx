@@ -6,15 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { Edit, Trash2, PlusCircle, Search } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import SeoStructuredData from "@/components/SeoStructuredData";
+import { projectService, Project } from "@/services/firebaseDataService";
 
 const ManageProjects = () => {
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
@@ -36,13 +36,8 @@ const ManageProjects = () => {
     if (!user || !isAdmin) return;
     const fetchProjects = async () => {
       try {
-        const { data, error } = await supabase
-          .from('projects')
-          .select('*')
-          .order('id', { ascending: false });
-
-        if (error) throw error;
-        setProjects(data || []);
+        const data = await projectService.getAll();
+        setProjects(data as Project[]);
       } catch (error) {
         console.error('Error fetching projects:', error);
         toast({
@@ -58,19 +53,13 @@ const ManageProjects = () => {
     fetchProjects();
   }, [toast, user, isAdmin]);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this project? This action cannot be undone.")) {
       return;
     }
 
     try {
-      const { error } = await supabase
-        .from('projects')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
+      await projectService.delete(id);
       setProjects(projects.filter(project => project.id !== id));
       toast({
         title: "Success",

@@ -3,116 +3,46 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { useProjects, Project } from "@/pages/ProjectContext";
 import { Link } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Helmet } from "react-helmet-async";
 import SeoStructuredData from "@/components/SeoStructuredData";
 import LazyImage from "@/components/LazyImage";
+import { projectService } from "@/services/firebaseDataService";
 
 const Index = () => {
   // Get user-created projects from context
   const { projects: userProjects } = useProjects();
   const [predefinedProjects, setPredefinedProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [hasMoreProjects, setHasMoreProjects] = useState(true);
-  const [lastLoadedId, setLastLoadedId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   
   // Fetch projects with simplified error handling
-  const fetchPredefinedProjects = useCallback(async (isInitial: boolean = false) => {
+  const fetchPredefinedProjects = useCallback(async () => {
     try {
       setError(null);
+      setIsLoading(true);
       
-      // Setup query with pagination
-      let query = supabase
-        .from('projects')
-        .select('*')
-        .order('id', { ascending: false });
+      const data = await projectService.getAll();
+      setPredefinedProjects(data as Project[]);
       
-      // Set limits for pagination
-      if (isInitial) {
-        query = query.limit(9); // Load more initially to ensure content is visible
-      } else if (lastLoadedId !== null) {
-        query = query.lt('id', lastLoadedId).limit(6);
-      }
-      
-      const { data, error } = await query;
-      
-      if (error) {
-        console.error('Supabase error:', error);
-        throw new Error(`Database error: ${error.message}`);
-      }
-      
-      if (data) {
-        const projects = data as Project[];
-        console.log(`Fetched ${projects.length} projects`, projects);
-        
-        if (isInitial) {
-          setPredefinedProjects(projects);
-        } else {
-          setPredefinedProjects(prev => [...prev, ...projects]);
-        }
-        
-        if (projects.length > 0) {
-          setLastLoadedId(projects[projects.length - 1].id);
-        }
-        
-        setHasMoreProjects(projects.length === (isInitial ? 9 : 6));
-      } else {
-        console.warn('No data returned from Supabase');
-        setPredefinedProjects([]);
-      }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in fetchPredefinedProjects:', error);
       setError(error instanceof Error ? error.message : 'Failed to load projects. Please check your connection.');
     } finally {
       setIsLoading(false);
     }
-  }, [lastLoadedId]);
+  }, []);
   
   // Initial fetch on component mount
   useEffect(() => {
     console.log('Starting initial project fetch...');
-    fetchPredefinedProjects(true);
-  }, []);
-  
-  // Handle loading more projects
-  const loadMoreProjects = useCallback(() => {
-    if (!isLoading && hasMoreProjects && lastLoadedId !== null) {
-      console.log('Loading more projects...');
-      setIsLoading(true);
-      fetchPredefinedProjects(false);
-    }
-  }, [isLoading, hasMoreProjects, lastLoadedId, fetchPredefinedProjects]);
-
-  // Setup intersection observer for lazy loading
-  useEffect(() => {
-    if (!hasMoreProjects || isLoading) return;
-    
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !isLoading && hasMoreProjects) {
-          loadMoreProjects();
-        }
-      },
-      { threshold: 0.1 }
-    );
-    
-    const loadMoreElement = document.getElementById("load-more-trigger");
-    if (loadMoreElement) {
-      observer.observe(loadMoreElement);
-    }
-    
-    return () => {
-      if (loadMoreElement) observer.unobserve(loadMoreElement);
-    };
-  }, [loadMoreProjects, isLoading, hasMoreProjects]);
+    fetchPredefinedProjects();
+  }, [fetchPredefinedProjects]);
 
   console.log('Render state:', { 
     isLoading, 
     projectCount: predefinedProjects.length, 
-    error, 
-    hasMoreProjects 
+    error
   });
 
   return (
@@ -163,10 +93,7 @@ const Index = () => {
             <button 
               onClick={() => {
                 setError(null);
-                setIsLoading(true);
-                setPredefinedProjects([]);
-                setLastLoadedId(null);
-                fetchPredefinedProjects(true);
+                fetchPredefinedProjects();
               }}
               className="ml-2 underline hover:no-underline"
             >
@@ -224,30 +151,6 @@ const Index = () => {
             ))
           )}
         </div>
-        
-        {/* Load more trigger */}
-        {hasMoreProjects && !error && (
-          <div 
-            id="load-more-trigger" 
-            className="py-8 flex justify-center"
-          >
-            {isLoading && predefinedProjects.length > 0 ? (
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 rounded-full bg-primary animate-pulse"></div>
-                <div className="w-4 h-4 rounded-full bg-primary animate-pulse delay-150"></div>
-                <div className="w-4 h-4 rounded-full bg-primary animate-pulse delay-300"></div>
-              </div>
-            ) : !isLoading ? (
-              <button 
-                onClick={loadMoreProjects}
-                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-                disabled={isLoading}
-              >
-                Load More Projects
-              </button>
-            ) : null}
-          </div>
-        )}
         
         {/* No projects message */}
         {!isLoading && predefinedProjects.length === 0 && !error && (

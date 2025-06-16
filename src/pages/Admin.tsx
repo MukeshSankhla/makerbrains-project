@@ -1,11 +1,11 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, Settings, List, User as UserIcon, BookOpen, Package } from "lucide-react";
+import { PlusCircle, Settings, List, User as UserIcon, BookOpen, Package, Calendar } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 
-// Show all admin options, including Order Management!
+// Show all admin options, including Order Management and Workshop Management!
 const Admin = () => {
   const { isAdmin, userProfile } = useAuth();
   const navigate = useNavigate();
@@ -39,6 +39,19 @@ const Admin = () => {
           icon: Settings,
           link: "/manage-projects",
           color: "text-blue-600"
+        },
+      ],
+    },
+    {
+      title: "Workshops",
+      description: "Create and manage workshops",
+      icon: Calendar,
+      actions: [
+        {
+          label: "Manage Workshops",
+          icon: Settings,
+          link: "/manage-workshops",
+          color: "text-purple-600"
         },
       ],
     },
@@ -136,7 +149,7 @@ const Admin = () => {
                   <Link
                     key={actionIndex}
                     to={action.link}
-                    className="flex items-center gap-3 p-3 rounded-md hover:bg-gray-200"
+                    className="flex items-center gap-3 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-800"
                   >
                     <action.icon className={`h-5 w-5 ${action.color || 'text-primary'}`} />
                     <span className="font-medium">{action.label}</span>

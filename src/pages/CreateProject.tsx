@@ -6,9 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Loader2, Upload, Calendar as CalendarIcon } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { Helmet } from "react-helmet-async";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -18,6 +17,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { projectService } from "@/services/firebaseDataService";
 
 const CreateProject = () => {
   const navigate = useNavigate();
@@ -64,15 +64,8 @@ const CreateProject = () => {
         date: formattedDate
       };
       
-      // Insert into Supabase
-      const { data, error } = await supabase
-        .from('projects')
-        .insert([newProject])
-        .select();
-      
-      if (error) {
-        throw error;
-      }
+      // Insert into Firebase
+      await projectService.create(newProject);
       
       toast({
         title: "Success!",
@@ -99,35 +92,6 @@ const CreateProject = () => {
     setIsUploading(true);
     
     try {
-      // Upload to Supabase Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2, 15)}-${Date.now()}.${fileExt}`;
-      const filePath = `project-images/${fileName}`;
-      
-      const { error: uploadError } = await supabase.storage
-        .from('maker-images')
-        .upload(filePath, file);
-      
-      if (uploadError) {
-        throw uploadError;
-      }
-      
-      // Get public URL
-      const { data } = supabase.storage
-        .from('maker-images')
-        .getPublicUrl(filePath);
-      
-      if (data && data.publicUrl) {
-        setImage(data.publicUrl);
-      }
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      toast({
-        title: "Upload failed",
-        description: "Could not upload the image. Please try again.",
-        variant: "destructive",
-      });
-      
       // Fallback to FileReader for preview
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -136,6 +100,13 @@ const CreateProject = () => {
         }
       };
       reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast({
+        title: "Upload failed",
+        description: "Could not upload the image. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsUploading(false);
     }

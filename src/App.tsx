@@ -1,4 +1,3 @@
-
 import React, { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -80,6 +79,7 @@ const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const ManageCourses = React.lazy(() => import("./pages/ManageCourses"));
+const ManageWorkshops = React.lazy(() => import("./pages/ManageWorkshops"));
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -154,6 +154,13 @@ const App = () => (
                           <ProtectedRoute>
                             <Suspense fallback={<div>Loading...</div>}>
                               <ManageCourses />
+                            </Suspense>
+                          </ProtectedRoute>
+                        } />
+                        <Route path="/manage-workshops" element={
+                          <ProtectedRoute>
+                            <Suspense fallback={<div>Loading...</div>}>
+                              <ManageWorkshops />
                             </Suspense>
                           </ProtectedRoute>
                         } />

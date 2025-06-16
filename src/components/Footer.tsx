@@ -1,210 +1,158 @@
 
-import { ThemeToggle } from "./ThemeToggle";
-import { 
-  Youtube, 
-  Github, 
-  Linkedin, 
-  Instagram, 
-  Mail, 
-  Info,
-  HelpCircle,
-  Phone,
-  FileText,
-  Shield,
-  Copyright as CopyrightIcon,
-  MapPin,
-  Clock,
-  Heart
-} from "lucide-react"; 
+import React from "react";
 import { Link } from "react-router-dom";
+import { Youtube, Github, Linkedin, Instagram, Mail, MapPin, Phone } from "lucide-react";
 
-export function Footer() {
+export const Footer = () => {
   return (
-    <footer className="bg-slate-900 text-white py-12 border-t">
-      <div className="container mx-auto px-4">
+    <footer className="bg-background border-t mt-auto">
+      <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Company Info */}
+          {/* Brand Section */}
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-white">Maker Brains</h3>
-            <p className="text-slate-300 text-sm leading-relaxed">
-              Empowering creators and innovators through hands-on learning experiences. 
-              Join our community of makers and bring your ideas to life.
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <span className="text-primary-foreground font-bold text-sm">MB</span>
+              </div>
+              <span className="font-bold text-xl">Maker Brains</span>
+            </div>
+            <p className="text-muted-foreground text-sm">
+              Empowering makers with innovative DIY electronics, robotics projects, and educational content.
             </p>
-            <div className="flex items-center space-x-2 text-slate-300">
-              <MapPin className="w-4 h-4" />
-              <span className="text-sm">Building the future, one project at a time</span>
+            <div className="flex space-x-4">
+              <a 
+                href="https://www.youtube.com/@makerbrains" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="YouTube"
+              >
+                <Youtube className="h-5 w-5" />
+              </a>
+              <a 
+                href="https://github.com/MukeshSankhla" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="GitHub"
+              >
+                <Github className="h-5 w-5" />
+              </a>
+              <a 
+                href="https://www.linkedin.com/in/mukeshsankhla/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="LinkedIn"
+              >
+                <Linkedin className="h-5 w-5" />
+              </a>
+              <a 
+                href="https://www.instagram.com/makerbrains_official/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="Instagram"
+              >
+                <Instagram className="h-5 w-5" />
+              </a>
             </div>
           </div>
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white flex items-center">
-              <Info className="w-5 h-5 mr-2 text-blue-400" />
-              Quick Links
-            </h3>
-            <ul className="space-y-3">
+            <h3 className="font-semibold text-foreground">Quick Links</h3>
+            <ul className="space-y-2 text-sm">
               <li>
-                <Link 
-                  to="/about" 
-                  className="flex items-center text-slate-300 hover:text-white transition-colors group text-sm"
-                >
-                  <Heart className="w-4 h-4 mr-2 opacity-60 group-hover:opacity-100 text-red-400" />
+                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/shop" 
-                  className="flex items-center text-slate-300 hover:text-white transition-colors group text-sm"
-                >
-                  <Info className="w-4 h-4 mr-2 opacity-60 group-hover:opacity-100 text-blue-400" />
-                  Shop
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/workshops" 
-                  className="flex items-center text-slate-300 hover:text-white transition-colors group text-sm"
-                >
-                  <Clock className="w-4 h-4 mr-2 opacity-60 group-hover:opacity-100 text-green-400" />
+                <Link to="/workshops" className="text-muted-foreground hover:text-primary transition-colors">
                   Workshops
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/courses" 
-                  className="flex items-center text-slate-300 hover:text-white transition-colors group text-sm"
-                >
-                  <Info className="w-4 h-4 mr-2 opacity-60 group-hover:opacity-100 text-purple-400" />
+                <Link to="/shop" className="text-muted-foreground hover:text-primary transition-colors">
+                  Shop
+                </Link>
+              </li>
+              <li>
+                <Link to="/courses" className="text-muted-foreground hover:text-primary transition-colors">
                   Courses
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Support */}
+          {/* Resources */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white flex items-center">
-              <HelpCircle className="w-5 h-5 mr-2 text-green-400" />
-              Support
-            </h3>
-            <ul className="space-y-3">
+            <h3 className="font-semibold text-foreground">Resources</h3>
+            <ul className="space-y-2 text-sm">
               <li>
-                <Link 
-                  to="/contact" 
-                  className="flex items-center text-slate-300 hover:text-white transition-colors group text-sm"
-                >
-                  <Phone className="w-4 h-4 mr-2 opacity-60 group-hover:opacity-100 text-green-400" />
+                <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/contact" 
-                  className="flex items-center text-slate-300 hover:text-white transition-colors group text-sm"
-                >
-                  <HelpCircle className="w-4 h-4 mr-2 opacity-60 group-hover:opacity-100 text-blue-400" />
-                  Help & Support
+                <Link to="/legal" className="text-muted-foreground hover:text-primary transition-colors">
+                  Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/legal" 
-                  className="flex items-center text-slate-300 hover:text-white transition-colors group text-sm"
-                >
-                  <FileText className="w-4 h-4 mr-2 opacity-60 group-hover:opacity-100 text-yellow-400" />
+                <Link to="/legal" className="text-muted-foreground hover:text-primary transition-colors">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/legal" 
-                  className="flex items-center text-slate-300 hover:text-white transition-colors group text-sm"
+                <a 
+                  href="https://www.youtube.com/@makerbrains" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-colors"
                 >
-                  <Shield className="w-4 h-4 mr-2 opacity-60 group-hover:opacity-100 text-red-400" />
-                  Privacy Policy
-                </Link>
+                  YouTube Channel
+                </a>
               </li>
             </ul>
           </div>
 
-          {/* Connect */}
+          {/* Contact Info */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white flex items-center">
-              <Mail className="w-5 h-5 mr-2 text-blue-400" />
-              Connect
-            </h3>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <p className="flex items-center text-slate-300 text-sm">
-                  <Mail className="w-4 h-4 mr-2 text-blue-400" />
-                  mukeshdiy1@gmail.com
-                </p>
+            <h3 className="font-semibold text-foreground">Contact</h3>
+            <div className="space-y-3 text-sm">
+              <div className="flex items-center space-x-2 text-muted-foreground">
+                <Mail className="h-4 w-4" />
+                <span>hello@makerbrains.com</span>
               </div>
-              
-              <div>
-                <p className="text-sm text-slate-300 mb-3 font-medium">Follow us:</p>
-                <div className="grid grid-cols-2 gap-2">
-                  <a 
-                    href="https://www.youtube.com/@makerbrains" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="flex items-center gap-2 px-3 py-2 bg-red-600/20 rounded-md hover:bg-red-600/30 transition-colors text-sm"
-                    aria-label="Visit our YouTube channel"
-                  >
-                    <Youtube className="w-4 h-4 text-red-400" />
-                    <span className="text-slate-200 font-medium">YouTube</span>
-                  </a>
-                  <a 
-                    href="https://github.com/MukeshSankhla" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="flex items-center gap-2 px-3 py-2 bg-gray-600/20 rounded-md hover:bg-gray-600/30 transition-colors text-sm"
-                    aria-label="Visit our GitHub profile"
-                  >
-                    <Github className="w-4 h-4 text-gray-300" />
-                    <span className="text-slate-200 font-medium">GitHub</span>
-                  </a>
-                  <a 
-                    href="https://www.linkedin.com/in/mukeshsankhla/" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="flex items-center gap-2 px-3 py-2 bg-blue-600/20 rounded-md hover:bg-blue-600/30 transition-colors text-sm"
-                    aria-label="Visit our LinkedIn profile"
-                  >
-                    <Linkedin className="w-4 h-4 text-blue-400" />
-                    <span className="text-slate-200 font-medium">LinkedIn</span>
-                  </a>
-                  <a 
-                    href="https://www.instagram.com/makerbrains_official/" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="flex items-center gap-2 px-3 py-2 bg-pink-600/20 rounded-md hover:bg-pink-600/30 transition-colors text-sm"
-                    aria-label="Visit our Instagram profile"
-                  >
-                    <Instagram className="w-4 h-4 text-pink-400" />
-                    <span className="text-slate-200 font-medium">Instagram</span>
-                  </a>
-                </div>
+              <div className="flex items-center space-x-2 text-muted-foreground">
+                <Phone className="h-4 w-4" />
+                <span>+1 (555) 123-4567</span>
+              </div>
+              <div className="flex items-start space-x-2 text-muted-foreground">
+                <MapPin className="h-4 w-4 mt-0.5" />
+                <span>123 Maker Street<br />Innovation City, IC 12345</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-slate-700 mt-12 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="flex items-center text-sm text-slate-400">
-              <CopyrightIcon className="w-4 h-4 mr-1" />
-              {new Date().getFullYear()} Maker Brains. All rights reserved.
-            </div>
-            <div className="flex items-center space-x-6">
-              <ThemeToggle />
-              <p className="text-xs text-slate-500">Made with ❤️ for the maker community</p>
-            </div>
-          </div>
+        <div className="border-t mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-muted-foreground text-sm">
+            © {new Date().getFullYear()} Maker Brains. All rights reserved.
+          </p>
+          <p className="text-muted-foreground text-sm mt-2 md:mt-0">
+            Made with ❤️ by Mukesh Sankhla
+          </p>
         </div>
       </div>
     </footer>
   );
-}
+};
