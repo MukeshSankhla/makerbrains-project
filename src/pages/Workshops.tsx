@@ -1,46 +1,25 @@
 
 import { useState, useEffect } from "react";
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, ClockIcon, UsersIcon, MapPinIcon } from "lucide-react";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
-import { db } from "@/config/firebase";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { workshopService, Workshop } from "@/services/firebaseDataService";
 import { Skeleton } from "@/components/ui/skeleton";
-
-interface Workshop {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  duration: string;
-  maxParticipants: number;
-  currentParticipants: number;
-  location: string;
-  price: number;
-  imageUrl: string;
-  category: string;
-  difficulty: string;
-}
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function Workshops() {
   const [workshops, setWorkshops] = useState<Workshop[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedWorkshop, setSelectedWorkshop] = useState<Workshop | null>(null);
 
   useEffect(() => {
     const fetchWorkshops = async () => {
       try {
-        const workshopsRef = collection(db, "workshops");
-        const q = query(workshopsRef, orderBy("date", "asc"));
-        const querySnapshot = await getDocs(q);
-        
-        const workshopData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Workshop[];
-        
-        setWorkshops(workshopData);
+        const workshopData = await workshopService.getAll();
+        setWorkshops(workshopData as Workshop[]);
       } catch (error) {
         console.error("Error fetching workshops:", error);
       } finally {
@@ -50,11 +29,6 @@ export default function Workshops() {
 
     fetchWorkshops();
   }, []);
-
-  const categories = ["all", ...Array.from(new Set(workshops.map(w => w.category)))];
-  const filteredWorkshops = selectedCategory === "all" 
-    ? workshops 
-    : workshops.filter(w => w.category === selectedCategory);
 
   if (isLoading) {
     return (
@@ -75,83 +49,45 @@ export default function Workshops() {
     <div className="container mx-auto py-8">
       <div className="space-y-6">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold">Hands-on Workshops</h1>
+          <h1 className="text-4xl font-bold">Workshops</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Join our interactive workshops and learn by doing. From beginner-friendly sessions to advanced techniques, 
-            we have something for every maker.
+            Explore our workshop posters and upcoming events.
           </p>
-        </div>
-
-        {/* Category Filter */}
-        <div className="flex flex-wrap gap-2 justify-center">
-          {categories.map((category) => (
-            <Button
-              key={category}
-              variant={selectedCategory === category ? "default" : "outline"}
-              onClick={() => setSelectedCategory(category)}
-              className="capitalize"
-            >
-              {category}
-            </Button>
-          ))}
         </div>
 
         {/* Workshops Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredWorkshops.length > 0 ? (
-            filteredWorkshops.map((workshop) => (
-              <Card key={workshop.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="relative h-48 bg-gray-200">
-                  <img
-                    src={workshop.imageUrl || "/placeholder.svg"}
-                    alt={workshop.title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = "/placeholder.svg";
-                    }}
-                  />
-                  <Badge className="absolute top-2 right-2" variant="secondary">
-                    {workshop.difficulty}
-                  </Badge>
+          {workshops.length > 0 ? (
+            workshops.map((workshop) => (
+              <Card 
+                key={workshop.id} 
+                className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => setSelectedWorkshop(workshop)}
+              >
+                <div className="relative h-64 bg-gray-100">
+                  {workshop.posterUrl ? (
+                    <img
+                      src={workshop.posterUrl}
+                      alt={workshop.title}
+                      className="w-full h-full object-contain"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "/placeholder.svg";
+                      }}
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-muted-foreground">
+                      No poster available
+                    </div>
+                  )}
                 </div>
                 
                 <CardHeader>
-                  <div className="space-y-2">
-                    <Badge variant="outline" className="w-fit">
-                      {workshop.category}
-                    </Badge>
-                    <h3 className="text-xl font-semibold line-clamp-2">{workshop.title}</h3>
-                    <p className="text-muted-foreground line-clamp-3">{workshop.description}</p>
-                  </div>
+                  <h3 className="text-xl font-semibold line-clamp-2">{workshop.title}</h3>
                 </CardHeader>
 
-                <CardContent className="space-y-3">
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <CalendarIcon className="h-4 w-4 mr-2" />
-                    {new Date(workshop.date).toLocaleDateString()}
-                  </div>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <ClockIcon className="h-4 w-4 mr-2" />
-                    {workshop.duration}
-                  </div>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <UsersIcon className="h-4 w-4 mr-2" />
-                    {workshop.currentParticipants}/{workshop.maxParticipants} participants
-                  </div>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <MapPinIcon className="h-4 w-4 mr-2" />
-                    {workshop.location}
-                  </div>
+                <CardContent>
+                  <p className="text-muted-foreground line-clamp-3">{workshop.description}</p>
                 </CardContent>
-
-                <CardFooter className="flex justify-between items-center">
-                  <span className="text-2xl font-bold">${workshop.price}</span>
-                  <Button 
-                    disabled={workshop.currentParticipants >= workshop.maxParticipants}
-                  >
-                    {workshop.currentParticipants >= workshop.maxParticipants ? "Full" : "Register"}
-                  </Button>
-                </CardFooter>
               </Card>
             ))
           ) : (
@@ -162,6 +98,32 @@ export default function Workshops() {
           )}
         </div>
       </div>
+
+      {/* Full Poster Dialog */}
+      <Dialog open={!!selectedWorkshop} onOpenChange={() => setSelectedWorkshop(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle>{selectedWorkshop?.title}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {selectedWorkshop?.posterUrl && (
+              <div className="flex justify-center">
+                <img
+                  src={selectedWorkshop.posterUrl}
+                  alt={selectedWorkshop.title}
+                  className="max-w-full max-h-[70vh] object-contain"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/placeholder.svg";
+                  }}
+                />
+              </div>
+            )}
+            <div className="text-center">
+              <p className="text-muted-foreground">{selectedWorkshop?.description}</p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

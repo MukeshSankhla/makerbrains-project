@@ -1,12 +1,12 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Plus, Edit, Trash2 } from "lucide-react";
+import { Loader2, Plus, Edit, Trash2, Upload } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { workshopService, Workshop } from "@/services/firebaseDataService";
 import {
@@ -24,6 +24,8 @@ const ManageWorkshops = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingWorkshop, setEditingWorkshop] = useState<Workshop | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { isAdmin } = useAuth();
 
@@ -31,15 +33,7 @@ const ManageWorkshops = () => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    date: "",
-    duration: "",
-    maxParticipants: 20,
-    currentParticipants: 0,
-    location: "",
-    price: 0,
-    imageUrl: "",
-    category: "",
-    difficulty: "Beginner"
+    posterUrl: ""
   });
 
   useEffect(() => {
@@ -67,21 +61,53 @@ const ManageWorkshops = () => {
     setFormData({
       title: "",
       description: "",
-      date: "",
-      duration: "",
-      maxParticipants: 20,
-      currentParticipants: 0,
-      location: "",
-      price: 0,
-      imageUrl: "",
-      category: "",
-      difficulty: "Beginner"
+      posterUrl: ""
     });
     setEditingWorkshop(null);
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    
+    try {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setFormData(prev => ({ ...prev, posterUrl: event.target!.result as string }));
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast({
+        title: "Upload failed",
+        description: "Could not upload the image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.title || !formData.description) {
+      toast({
+        title: "Missing fields",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -122,15 +148,7 @@ const ManageWorkshops = () => {
     setFormData({
       title: workshop.title,
       description: workshop.description,
-      date: workshop.date,
-      duration: workshop.duration,
-      maxParticipants: workshop.maxParticipants,
-      currentParticipants: workshop.currentParticipants,
-      location: workshop.location,
-      price: workshop.price,
-      imageUrl: workshop.imageUrl,
-      category: workshop.category,
-      difficulty: workshop.difficulty
+      posterUrl: workshop.posterUrl
     });
     setIsDialogOpen(true);
   };
@@ -170,7 +188,7 @@ const ManageWorkshops = () => {
               Add Workshop
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
                 {editingWorkshop ? "Edit Workshop" : "Add New Workshop"}
@@ -198,116 +216,48 @@ const ManageWorkshops = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="date">Date</Label>
-                  <Input
-                    id="date"
-                    type="datetime-local"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="duration">Duration</Label>
-                  <Input
-                    id="duration"
-                    value={formData.duration}
-                    onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                    placeholder="e.g., 2 hours"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
-                  <Input
-                    id="location"
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="price">Price ($)</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    min="0"
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="maxParticipants">Max Participants</Label>
-                  <Input
-                    id="maxParticipants"
-                    type="number"
-                    min="1"
-                    value={formData.maxParticipants}
-                    onChange={(e) => setFormData({ ...formData, maxParticipants: Number(e.target.value) })}
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="currentParticipants">Current Participants</Label>
-                  <Input
-                    id="currentParticipants"
-                    type="number"
-                    min="0"
-                    value={formData.currentParticipants}
-                    onChange={(e) => setFormData({ ...formData, currentParticipants: Number(e.target.value) })}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="category">Category</Label>
-                  <Input
-                    id="category"
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    placeholder="e.g., Electronics, 3D Printing"
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="difficulty">Difficulty</Label>
-                  <select
-                    id="difficulty"
-                    value={formData.difficulty}
-                    onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
-                    className="w-full px-3 py-2 border border-input rounded-md"
-                    required
-                  >
-                    <option value="Beginner">Beginner</option>
-                    <option value="Intermediate">Intermediate</option>
-                    <option value="Advanced">Advanced</option>
-                  </select>
-                </div>
-              </div>
-
               <div className="space-y-2">
-                <Label htmlFor="imageUrl">Cover Image URL</Label>
-                <Input
-                  id="imageUrl"
-                  value={formData.imageUrl}
-                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  placeholder="Enter image URL"
-                />
+                <Label htmlFor="posterUrl">Workshop Poster</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="posterUrl"
+                    value={formData.posterUrl}
+                    onChange={(e) => setFormData({ ...formData, posterUrl: e.target.value })}
+                    placeholder="Enter poster URL or upload an image"
+                  />
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                  />
+                  <Button 
+                    type="button"
+                    variant="secondary"
+                    onClick={triggerFileInput}
+                    disabled={isUploading}
+                  >
+                    {isUploading ? "Uploading..." : (
+                      <>
+                        <Upload className="mr-2 h-4 w-4" />
+                        Upload
+                      </>
+                    )}
+                  </Button>
+                </div>
+                {formData.posterUrl && (
+                  <div className="mt-2">
+                    <img 
+                      src={formData.posterUrl} 
+                      alt="Poster preview" 
+                      className="h-48 object-contain rounded-md border"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "/placeholder.svg";
+                      }}
+                    />
+                  </div>
+                )}
               </div>
 
               <Button type="submit" disabled={isSubmitting} className="w-full">
@@ -339,19 +289,25 @@ const ManageWorkshops = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {workshops.map((workshop) => (
             <Card key={workshop.id} className="flex flex-col">
+              <div className="h-48 bg-gray-100">
+                {workshop.posterUrl && (
+                  <img
+                    src={workshop.posterUrl}
+                    alt={workshop.title}
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "/placeholder.svg";
+                    }}
+                  />
+                )}
+              </div>
               <CardHeader>
                 <CardTitle className="line-clamp-2">{workshop.title}</CardTitle>
               </CardHeader>
               <CardContent className="flex-grow">
-                <p className="text-sm text-muted-foreground line-clamp-3 mb-2">
+                <p className="text-sm text-muted-foreground line-clamp-3">
                   {workshop.description}
                 </p>
-                <div className="text-xs text-muted-foreground space-y-1">
-                  <p>Date: {new Date(workshop.date).toLocaleDateString()}</p>
-                  <p>Location: {workshop.location}</p>
-                  <p>Price: ${workshop.price}</p>
-                  <p>Participants: {workshop.currentParticipants}/{workshop.maxParticipants}</p>
-                </div>
               </CardContent>
               <div className="p-6 pt-0 flex justify-end space-x-2">
                 <Button 

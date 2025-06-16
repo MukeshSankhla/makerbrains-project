@@ -61,15 +61,7 @@ export interface Workshop {
   id: string;
   title: string;
   description: string;
-  date: string;
-  duration: string;
-  maxParticipants: number;
-  currentParticipants: number;
-  location: string;
-  price: number;
-  imageUrl: string;
-  category: string;
-  difficulty: string;
+  posterUrl: string;
 }
 
 // Generic CRUD operations
@@ -90,10 +82,12 @@ export const createDocument = async (collectionName: string, data: any) => {
 export const getAllDocuments = async (collectionName: string, orderByField?: string) => {
   try {
     const collectionRef = collection(db, collectionName);
-    let queryRef: Query<DocumentData> | CollectionReference<DocumentData> = collectionRef;
+    let queryRef: Query<DocumentData>;
     
     if (orderByField) {
       queryRef = query(collectionRef, orderBy(orderByField, 'desc'));
+    } else {
+      queryRef = collectionRef as Query<DocumentData>;
     }
     
     const querySnapshot = await getDocs(queryRef);
@@ -161,14 +155,14 @@ export const recognitionService = {
 };
 
 export const projectService = {
-  getAll: () => getAllDocuments('projects', 'date'),
+  getAll: () => getAllDocuments('projects', 'createdAt'),
   create: (data: Omit<Project, 'id'>) => createDocument('projects', data),
   update: (id: string, data: Partial<Project>) => updateDocument('projects', id, data),
   delete: (id: string) => deleteDocument('projects', id)
 };
 
 export const workshopService = {
-  getAll: () => getAllDocuments('workshops', 'date'),
+  getAll: () => getAllDocuments('workshops', 'createdAt'),
   create: (data: Omit<Workshop, 'id'>) => createDocument('workshops', data),
   update: (id: string, data: Partial<Workshop>) => updateDocument('workshops', id, data),
   delete: (id: string) => deleteDocument('workshops', id)

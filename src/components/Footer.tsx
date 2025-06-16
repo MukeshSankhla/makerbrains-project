@@ -2,6 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Youtube, Github, Linkedin, Instagram, Mail, MapPin, Phone } from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle";
 
 export const Footer = () => {
   return (
@@ -19,7 +20,7 @@ export const Footer = () => {
             <p className="text-muted-foreground text-sm">
               Empowering makers with innovative DIY electronics, robotics projects, and educational content.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex space-x-4 items-center">
               <a 
                 href="https://www.youtube.com/@makerbrains" 
                 target="_blank" 
@@ -56,6 +57,7 @@ export const Footer = () => {
               >
                 <Instagram className="h-5 w-5" />
               </a>
+              <ThemeToggle />
             </div>
           </div>
 

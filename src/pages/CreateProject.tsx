@@ -28,7 +28,7 @@ const CreateProject = () => {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
   const [url, setUrl] = useState("");
-  const [author, setAuthor] = useState("Mukesh Sankhla"); // Default author
+  const [author, setAuthor] = useState("Mukesh Sankhla");
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [publishDate, setPublishDate] = useState<Date | undefined>(new Date());
@@ -36,10 +36,10 @@ const CreateProject = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!title || !description || !url) {
+    if (!title || !description) {
       toast({
         title: "Missing fields",
-        description: "Please fill in all required fields",
+        description: "Please fill in title and description",
         variant: "destructive",
       });
       return;
@@ -48,24 +48,24 @@ const CreateProject = () => {
     setIsSubmitting(true);
 
     try {
-      // Format the date or use the current date as fallback
       const formattedDate = publishDate 
         ? format(publishDate, "MMMM d, yyyy")
         : format(new Date(), "MMMM d, yyyy");
       
-      // Prepare the project data
       const newProject = {
-        title,
-        description,
-        content: "", // Content is no longer required
-        image,
-        url,
-        author,
-        date: formattedDate
+        title: title.trim(),
+        description: description.trim(),
+        image: image.trim() || "/placeholder.svg",
+        url: url.trim(),
+        author: author.trim(),
+        date: formattedDate,
+        content: ""
       };
       
-      // Insert into Firebase
-      await projectService.create(newProject);
+      console.log('Creating project with data:', newProject);
+      
+      const result = await projectService.create(newProject);
+      console.log('Project created successfully:', result);
       
       toast({
         title: "Success!",
@@ -92,7 +92,6 @@ const CreateProject = () => {
     setIsUploading(true);
     
     try {
-      // Fallback to FileReader for preview
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
@@ -131,18 +130,7 @@ const CreateProject = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="url">Project URL</Label>
-                <Input
-                  id="url"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="Enter project URL"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="title">Project Title</Label>
+                <Label htmlFor="title">Project Title *</Label>
                 <Input
                   id="title"
                   value={title}
@@ -153,7 +141,7 @@ const CreateProject = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="description">Short Description</Label>
+                <Label htmlFor="description">Short Description *</Label>
                 <Textarea
                   id="description"
                   value={description}
@@ -161,6 +149,16 @@ const CreateProject = () => {
                   placeholder="Enter a brief description (shown in cards)"
                   rows={3}
                   required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="url">Project URL (optional)</Label>
+                <Input
+                  id="url"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="Enter project URL"
                 />
               </div>
               
@@ -236,16 +234,16 @@ const CreateProject = () => {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={publishDate}
-                    onSelect={setPublishDate}
-                    initialFocus
-                    captionLayout="dropdown"
-                    fromYear={2000}
-                    toYear={new Date().getFullYear() + 5}
-                    className={cn("p-3 pointer-events-auto")}
-                  />
+                    <Calendar
+                      mode="single"
+                      selected={publishDate}
+                      onSelect={setPublishDate}
+                      initialFocus
+                      captionLayout="dropdown"
+                      fromYear={2000}
+                      toYear={new Date().getFullYear() + 5}
+                      className={cn("p-3 pointer-events-auto")}
+                    />
                   </PopoverContent>
                 </Popover>
               </div>
