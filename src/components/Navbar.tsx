@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
-import { LogOut, Menu, X, Home, ShoppingCart } from "lucide-react";
+import { LogOut, Menu, X, Home, ShoppingCart, BookAIcon, VideoIcon, ShipIcon, CarrotIcon, StoreIcon, PlayIcon, HomeIcon } from "lucide-react";
 import logoLight from "/src/images/logo_1.png";
 import logoDark from "/src/images/logo_2.png";
 import { useAuth } from "@/contexts/AuthContext";
@@ -52,24 +52,44 @@ export function Navbar() {
           />
         </Link>
         {/* Main Nav Links - Desktop */}
-        <div className="hidden md:flex space-x-2">
-          <Link to="/" className={isActive("/") ? "font-bold text-primary" : "text-foreground"}>
-            <Button variant="ghost" size="sm">Home</Button>
+        <div className="hidden md:flex justify-center space-x-4">
+          <Link
+            to="/"
+            className={`${
+              isActive("/") ? "font-bold text-primary" : "text-foreground"
+            } hover:text-primary transition-colors text-m`}
+          >
+            Home
           </Link>
-          <Link to="/shop" className={isActive("/shop") ? "font-bold text-primary" : "text-foreground"}>
-            <Button variant="ghost" size="sm">Shop</Button>
+          <Link
+            to="/shop"
+            className={`${
+              isActive("/shop") ? "font-bold text-primary" : "text-foreground"
+            } hover:text-primary transition-colors text-m`}
+          >
+            Shop
           </Link>
-          <Link to="/courses" className={isActive("/courses") ? "font-bold text-primary" : "text-foreground"}>
-            <Button variant="ghost" size="sm">Courses</Button>
+          <Link
+            to="/courses"
+            className={`${
+              isActive("/courses") ? "font-bold text-primary" : "text-foreground"
+            } hover:text-primary transition-colors text-m`}
+          >
+            Courses
           </Link>
-          <Link to="/contact" className={isActive("/contact") ? "font-bold text-primary" : "text-foreground"}>
-            <Button variant="ghost" size="sm">Contact</Button>
+          <Link
+            to="/contact"
+            className={`${
+              isActive("/contact") ? "font-bold text-primary" : "text-foreground"
+            } hover:text-primary transition-colors text-m`}
+          >
+            Contact
           </Link>
         </div>
         {/* Spacer */}
         <div className="flex-1" />
         {/* Right Side Navigation Items */}
-        <div className="hidden md:flex items-center space-x-2">
+        <div className="flex items-center space-x-2">
           {user ? (
             <ProfileDropdown onLogout={handleLogout} />
           ) : (
@@ -115,28 +135,20 @@ export function Navbar() {
           <div className="flex flex-col space-y-2 px-4 py-4 border-t border-border bg-background">
             <Link to="/" onClick={() => setIsMenuOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">
+                <HomeIcon className="mr-2 h-4 w-4" />
                 Home
               </Button>
             </Link>
             <Link to="/shop" onClick={() => setIsMenuOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">
+                <StoreIcon className="mr-2 h-4 w-4" />
                 Shop
               </Button>
             </Link>
             <Link to="/courses" onClick={() => setIsMenuOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">
+                <PlayIcon className="mr-2 h-4 w-4" />
                 Courses
-              </Button>
-            </Link>
-            <Link to="/cart" onClick={() => setIsMenuOpen(false)} className="relative">
-              <Button variant="ghost" className="w-full justify-start flex items-center">
-                <ShoppingCart className="mr-2 h-5 w-5" />
-                Cart
-                {cartCount > 0 && (
-                  <span className="ml-2 bg-green-600 text-white text-xs font-bold rounded-full px-2 py-0.5 shadow">
-                    {cartCount}
-                  </span>
-                )}
               </Button>
             </Link>
             <Link to="/contact" onClick={() => setIsMenuOpen(false)}>
@@ -145,18 +157,6 @@ export function Navbar() {
                 Contact
               </Button>
             </Link>
-            {user ? (
-              <ProfileDropdown onLogout={handleLogout} />
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                  <Button variant="outline" className="w-full">
-                    Sign In
-                  </Button>
-                </Link>
-                <ThemeToggle />
-              </div>
-            )}
           </div>
         </motion.div>
       )}
