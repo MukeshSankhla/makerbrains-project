@@ -1,39 +1,58 @@
 import { ThemeToggle } from "./ThemeToggle";
-import { Youtube, Github, Linkedin, Instagram, Mail } from "lucide-react"; 
+import { 
+  Youtube, 
+  Github, 
+  Linkedin, 
+  Instagram, 
+  Mail, 
+  Info,
+  HelpCircle,
+  Phone,
+  FileText,
+  Shield,
+  Copyright as CopyrightIcon,
+  Link2Icon
+} from "lucide-react"; 
 import { Link } from "react-router-dom";
 
 export function Footer() {
   return (
-    <footer className="py-4 border-t border-border">
+    <footer className="py-8 border-t border-border bg-background">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Company Info Section */}
           {/* About Us Section */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">About Us</h3>
-            <ul className="space-y-2">
+            <h3 className="text-lg font-semibold mb-4 flex items-center">
+              <Info className="w-5 h-5 mr-2 text-primary" />
+              About Us
+            </h3>
+            <ul className="space-y-3">
               <li>
-                <Link to="/" className="hover:text-primary/100 transition-colors">
-                  Maker Brains Overview
+                <Link 
+                  to="/" 
+                  className="flex items-center text-muted-foreground hover:text-foreground transition-colors group"
+                >
+                  <Info className="w-4 h-4 mr-2 opacity-60 group-hover:opacity-100" />
+                  Our Story
                 </Link>
               </li>
               <li>
-                <Link to="/" className="hover:text-primary/100 transition-colors">
-                  Our Projects
-                </Link>
-              </li>
-              <li>
-                <Link to="/shop" className="hover:text-primary/100 transition-colors">
-                  Shop
-                </Link>
-              </li>
-              <li>
-                <Link to="/courses" className="hover:text-primary/100 transition-colors">
-                  Courses
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="hover:text-primary/100 transition-colors">
+                <Link 
+                  to="/contact" 
+                  className="flex items-center text-muted-foreground hover:text-foreground transition-colors group"
+                >
+                  <HelpCircle className="w-4 h-4 mr-2 opacity-60 group-hover:opacity-100" />
                   Help & Support
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/contact" 
+                  className="flex items-center text-muted-foreground hover:text-foreground transition-colors group"
+                >
+                  <Phone className="w-4 h-4 mr-2 opacity-60 group-hover:opacity-100" />
+                  Contact Us
                 </Link>
               </li>
             </ul>
@@ -41,117 +60,117 @@ export function Footer() {
 
           {/* Legal Section */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Legal</h3>
-            <ul className="space-y-2">
+            <h3 className="text-lg font-semibold mb-4 flex items-center">
+              <Shield className="w-5 h-5 mr-2 text-primary" />
+              Legal
+            </h3>
+            <ul className="space-y-3">
               <li>
-                <Link to="/legal" className="hover:text-primary/100 transition-colors">
+                <Link 
+                  to="/legal" 
+                  className="flex items-center text-muted-foreground hover:text-foreground transition-colors group"
+                >
+                  <FileText className="w-4 h-4 mr-2 opacity-60 group-hover:opacity-100" />
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link to="/legal" className="hover:text-primary/100 transition-colors">
+                <Link 
+                  to="/legal" 
+                  className="flex items-center text-muted-foreground hover:text-foreground transition-colors group"
+                >
+                  <Shield className="w-4 h-4 mr-2 opacity-60 group-hover:opacity-100" />
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/legal" className="hover:text-primary/100 transition-colors">
+                <Link 
+                  to="/legal" 
+                  className="flex items-center text-muted-foreground hover:text-foreground transition-colors group"
+                >
+                  <CopyrightIcon className="w-4 h-4 mr-2 opacity-60 group-hover:opacity-100" />
                   Copyright
                 </Link>
               </li>
-              <li>
-                <Link to="/legal" className="hover:text-primary/100 transition-colors">
-                  Code of Conduct
-                </Link>
-              </li>
             </ul>
           </div>
 
-          {/* Find Us On Social Section */}
+          {/* Contact Section */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Find Us On Social</h3>
-            <ul className="space-y-2">
-              <li>
-                <a 
-                  href="https://www.youtube.com/@makerbrains" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="hover:text-primary/100 transition-colors flex items-center gap-2"
+            <h3 className="text-lg font-semibold mb-4 flex items-center">
+              <Mail className="w-5 h-5 mr-2 text-primary" />
+              Get in Touch
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <p 
+                  className="flex items-center text-muted-foreground hover:text-foreground transition-colors group"
                 >
-                  <Youtube className="w-4 h-4" />
-                  YouTube
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://github.com/MukeshSankhla" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="hover:text-primary/100 transition-colors flex items-center gap-2"
-                >
-                  <Github className="w-4 h-4" />
-                  GitHub
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://www.linkedin.com/in/mukeshsankhla/" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="hover:text-primary/100 transition-colors flex items-center gap-2"
-                >
-                  <Linkedin className="w-4 h-4" />
-                  LinkedIn
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://www.instagram.com/makerbrains_official/" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="hover:text-primary/100 transition-colors flex items-center gap-2"
-                >
-                  <Instagram className="w-4 h-4" />
-                  Instagram
-                </a>
-              </li>
-            </ul>
+                  <Mail className="w-4 h-4 mr-2 opacity-60 group-hover:opacity-100" />
+                  mukeshdiy1@gmail.com
+                </p>
+              </div>
+              
+              <div>
+                <p className="text-sm text-muted-foreground mb-2 font-medium">Follow us for updates:</p>
+                <div className="flex flex-wrap gap-3">
+                  <a 
+                    href="https://www.youtube.com/@makerbrains" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-gray-700 rounded-md hover:bg-red-200 dark:hover:bg-red-900/30 transition-colors"
+                    aria-label="Visit our YouTube channel"
+                  >
+                    <Youtube className="w-5 h-5 text-red-600" />
+                    <span className="text-sm font-medium">YouTube</span>
+                  </a>
+                  <a 
+                    href="https://github.com/MukeshSankhla" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 dark:bg-gray-700 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                    aria-label="Visit our GitHub profile"
+                  >
+                    <Github className="w-5 h-5" />
+                    <span className="text-sm font-medium">GitHub</span>
+                  </a>
+                  <a 
+                    href="https://www.linkedin.com/in/mukeshsankhla/" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 dark:bg-gray-700 rounded-md hover:bg-blue-200 dark:hover:bg-blue-900/30 transition-colors"
+                    aria-label="Visit our LinkedIn profile"
+                  >
+                    <Linkedin className="w-5 h-5 text-blue-600" />
+                    <span className="text-sm font-medium">LinkedIn</span>
+                  </a>
+                  <a 
+                    href="https://www.instagram.com/makerbrains_official/" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center gap-2 px-3 py-1.5 bg-pink-50 dark:bg-gray-700 rounded-md hover:bg-pink-200 dark:hover:bg-pink-900/30 transition-colors"
+                    aria-label="Visit our Instagram profile"
+                  >
+                    <Instagram className="w-5 h-5 text-pink-600" />
+                    <span className="text-sm font-medium">Instagram</span>
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Community Section */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Community</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/contact" className="hover:text-primary/100 transition-colors">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/" className="hover:text-primary/100 transition-colors">
-                  Electronics
-                </Link>
-              </li>
-              <li>
-                <Link to="/" className="hover:text-primary/100 transition-colors">
-                  DIY Projects
-                </Link>
-              </li>
-              <li>
-                <Link to="/" className="hover:text-primary/100 transition-colors">
-                  Maker Community
-                </Link>
-              </li>
-            </ul>
-          </div>
         </div>
 
         {/* Bottom Border */}
-        <div className="border-t border-gray-700 mt-6 pt-4">
-          <div className="flex justify-between items-center">
-            <div className="text-sm">
-              © {new Date().getFullYear()} Maker Brains. All rights reserved.
+        <div className="border-t border-border mt-8 pt-6">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div className="flex items-center text-sm text-muted-foreground">
+              <CopyrightIcon className="w-4 h-4 mr-1" />
+              {new Date().getFullYear()} Maker Brains. All rights reserved.
             </div>
-            <ThemeToggle />
+            <div className="flex items-center space-x-4">
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </div>

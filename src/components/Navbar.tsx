@@ -82,7 +82,7 @@ export function Navbar() {
               isActive("/contact") ? "font-bold text-primary" : "text-foreground"
             } hover:text-primary transition-colors text-m`}
           >
-            Contact
+            Contact Us
           </Link>
         </div>
         {/* Spacer */}
