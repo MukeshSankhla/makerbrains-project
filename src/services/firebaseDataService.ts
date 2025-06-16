@@ -9,7 +9,10 @@ import {
   orderBy, 
   query, 
   where,
-  Timestamp 
+  Timestamp,
+  Query,
+  CollectionReference,
+  DocumentData
 } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 
@@ -86,13 +89,14 @@ export const createDocument = async (collectionName: string, data: any) => {
 
 export const getAllDocuments = async (collectionName: string, orderByField?: string) => {
   try {
-    let q = collection(db, collectionName);
+    const collectionRef = collection(db, collectionName);
+    let queryRef: Query<DocumentData> | CollectionReference<DocumentData> = collectionRef;
     
     if (orderByField) {
-      q = query(collection(db, collectionName), orderBy(orderByField, 'desc'));
+      queryRef = query(collectionRef, orderBy(orderByField, 'desc'));
     }
     
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await getDocs(queryRef);
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
