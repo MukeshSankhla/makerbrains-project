@@ -39,6 +39,8 @@ import AddressBook from "./pages/AddressBook";
 import OrderDetails from "./pages/OrderDetails";
 import AdminOrders from "./pages/AdminOrders";
 import GuideEditor from "./pages/GuideEditor";
+import Workshops from "./pages/Workshops";
+import AboutUs from "./pages/AboutUs";
 
 const queryClient = new QueryClient();
 
@@ -105,8 +107,14 @@ const App = () => (
                           </div>
                         } />
                         <Route path="/shop" element={<Shop />} />
+                        <Route path="/workshops" element={
+                          <React.lazy(() => import("./pages/Workshops"))
+                        } />
                         <Route path="/courses" element={<CourseShop />} />
                         <Route path="/cart" element={<Cart />} />
+                        <Route path="/about" element={
+                          <React.lazy(() => import("./pages/AboutUs"))
+                        } />
                         <Route path="/orders" element={
                           <AuthenticatedRoute>
                             <Orders />

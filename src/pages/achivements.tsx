@@ -1,59 +1,40 @@
 
 import React, { useEffect, useState } from "react";
 import { FaTrophy, FaMedal, FaStar, FaLink, FaAward, FaRegNewspaper } from "react-icons/fa";
-import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
-
-interface Achievement {
-  id: number;
-  year: number;
-  title: string;
-  link: string;
-  icon: string;
-}
-
-interface Recognition {
-  id: number;
-  year: number;
-  title: string;
-  link: string;
-}
+import { achievementService, recognitionService, Achievement, Recognition } from "@/services/firebaseDataService";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AchievementsAndRecognition() {
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [recognitions, setRecognitions] = useState<Recognition[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch achievements
-        const { data: achievementsData, error: achievementsError } = await supabase
-          .from('achievements')
-          .select('*')
-          .order('year', { ascending: false });
+        const [achievementsData, recognitionsData] = await Promise.all([
+          achievementService.getAll(),
+          recognitionService.getAll()
+        ]);
         
-        if (achievementsError) throw achievementsError;
-        
-        // Fetch recognitions
-        const { data: recognitionsData, error: recognitionsError } = await supabase
-          .from('recognitions')
-          .select('*')
-          .order('year', { ascending: false });
-        
-        if (recognitionsError) throw recognitionsError;
-        
-        setAchievements(achievementsData || []);
-        setRecognitions(recognitionsData || []);
-      } catch (error) {
+        setAchievements(achievementsData as Achievement[]);
+        setRecognitions(recognitionsData as Recognition[]);
+      } catch (error: any) {
         console.error("Error fetching data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load achievements and recognitions. Please try again.",
+          variant: "destructive",
+        });
       } finally {
         setIsLoading(false);
       }
     };
     
     fetchData();
-  }, []);
+  }, [toast]);
 
   // Function to render the icon based on the icon type
   const renderIcon = (iconType: string) => {

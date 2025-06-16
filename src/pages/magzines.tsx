@@ -1,16 +1,9 @@
 
 import { Card, CardHeader } from "@/components/ui/card";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-
-interface Magazine {
-  id: number;
-  title: string;
-  image_url: string;
-  website_url: string;
-}
+import { magazineService, Magazine } from "@/services/firebaseDataService";
 
 export default function Magazines() {
   const [magazines, setMagazines] = useState<Magazine[]>([]);
@@ -19,72 +12,36 @@ export default function Magazines() {
   
   useEffect(() => {
     let isMounted = true;
-    let retryCount = 0;
-    const maxRetries = 5;
-    const retryDelay = 3000; // 3 seconds between retries
-    
-    // Check cache first
-    const cachedData = sessionStorage.getItem('magazines-data');
-    const cacheTimestamp = sessionStorage.getItem('magazines-timestamp');
-    const cacheExpiry = 5 * 60 * 1000; // 5 minutes
-    
-    if (cachedData && cacheTimestamp) {
-      const timestamp = parseInt(cacheTimestamp, 10);
-      if (Date.now() - timestamp < cacheExpiry) {
-        // Use cached data
-        setMagazines(JSON.parse(cachedData));
-        setIsLoading(false);
-        return;
-      }
-    }
     
     const fetchMagazines = async () => {
       try {
-        const { data, error } = await supabase
-          .from('magazines')
-          .select('*')
-          .order('id', { ascending: false });
+        const data = await magazineService.getAll();
         
-        if (error) {
-          console.error('Error fetching magazines:', error);
-          // Only attempt retries if we're still mounted
-          if (isMounted && retryCount < maxRetries) {
-            retryCount++;
-            console.log(`Retrying fetch (${retryCount}/${maxRetries})...`);
-            setTimeout(fetchMagazines, retryDelay);
-          }
-          return;
-        }
-        
-        // Only update state if component is still mounted
         if (isMounted) {
-          const magazineData = data || [];
-          setMagazines(magazineData);
-          setIsLoading(false);
-          
-          // Cache the data
-          sessionStorage.setItem('magazines-data', JSON.stringify(magazineData));
-          sessionStorage.setItem('magazines-timestamp', Date.now().toString());
+          setMagazines(data as Magazine[]);
         }
       } catch (error: any) {
-        console.error('Unexpected error fetching magazines:', error);
-        // Retry on unexpected errors too
-        if (isMounted && retryCount < maxRetries) {
-          retryCount++;
-          console.log(`Retrying fetch after error (${retryCount}/${maxRetries})...`);
-          setTimeout(fetchMagazines, retryDelay);
+        console.error('Error fetching magazines:', error);
+        if (isMounted) {
+          toast({
+            title: "Error",
+            description: "Failed to load magazines. Please try again.",
+            variant: "destructive",
+          });
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
         }
       }
     };
     
-    // Start fetching
     fetchMagazines();
     
-    // Cleanup function to prevent memory leaks and state updates after unmount
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [toast]);
 
   return (
     <section className="py-5">
@@ -118,7 +75,6 @@ export default function Magazines() {
                         className="w-full object-cover rounded-lg"
                         loading="lazy"
                         onError={(e) => {
-                          // Fallback for image errors
                           (e.currentTarget as HTMLImageElement).src = "/placeholder.svg";
                           (e.currentTarget as HTMLImageElement).alt = `${magazine.title} (image unavailable)`;
                         }}

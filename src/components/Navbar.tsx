@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
-import { LogOut, Menu, X, Home, ShoppingCart, BookAIcon, VideoIcon, ShipIcon, CarrotIcon, StoreIcon, PlayIcon, HomeIcon } from "lucide-react";
+import { LogOut, Menu, X, Home, ShoppingCart, BookAIcon, VideoIcon, ShipIcon, CarrotIcon, StoreIcon, PlayIcon, HomeIcon, WrenchIcon } from "lucide-react";
 import logoLight from "/src/images/logo_1.png";
 import logoDark from "/src/images/logo_2.png";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,7 +13,6 @@ import { ProfileDropdown } from "./ProfileDropdown";
 import { useCart } from "@/hooks/useCart";
 
 export function Navbar() {
-  // FIX: Add `logout` to destructure
   const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { cart } = useCart();
@@ -67,6 +66,14 @@ export function Navbar() {
             } hover:text-primary transition-colors text-m`}
           >
             Shop
+          </Link>
+          <Link
+            to="/workshops"
+            className={`${
+              isActive("/workshops") ? "font-bold text-primary" : "text-foreground"
+            } hover:text-primary transition-colors text-m`}
+          >
+            Workshops
           </Link>
           <Link
             to="/courses"
@@ -140,6 +147,12 @@ export function Navbar() {
               <Button variant="ghost" className="w-full justify-start">
                 <StoreIcon className="mr-2 h-4 w-4" />
                 Shop
+              </Button>
+            </Link>
+            <Link to="/workshops" onClick={() => setIsMenuOpen(false)}>
+              <Button variant="ghost" className="w-full justify-start">
+                <WrenchIcon className="mr-2 h-4 w-4" />
+                Workshops
               </Button>
             </Link>
             <Link to="/courses" onClick={() => setIsMenuOpen(false)}>
