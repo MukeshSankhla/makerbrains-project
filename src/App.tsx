@@ -1,3 +1,4 @@
+
 import React, { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -107,14 +108,10 @@ const App = () => (
                           </div>
                         } />
                         <Route path="/shop" element={<Shop />} />
-                        <Route path="/workshops" element={
-                          <React.lazy(() => import("./pages/Workshops"))
-                        } />
+                        <Route path="/workshops" element={<Workshops />} />
                         <Route path="/courses" element={<CourseShop />} />
                         <Route path="/cart" element={<Cart />} />
-                        <Route path="/about" element={
-                          <React.lazy(() => import("./pages/AboutUs"))
-                        } />
+                        <Route path="/about" element={<AboutUs />} />
                         <Route path="/orders" element={
                           <AuthenticatedRoute>
                             <Orders />
