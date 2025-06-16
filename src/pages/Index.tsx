@@ -23,7 +23,21 @@ const Index = () => {
       setIsLoading(true);
       
       const data = await projectService.getAll();
-      setPredefinedProjects(data as Project[]);
+      // Ensure the data matches the Project interface
+      const validProjects = data.filter((item: any) => 
+        item.title && item.description && item.image && item.author && item.date
+      ).map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        image: item.image,
+        author: item.author,
+        date: item.date,
+        content: item.content,
+        url: item.url
+      })) as Project[];
+      
+      setPredefinedProjects(validProjects);
       
     } catch (error: any) {
       console.error('Error in fetchPredefinedProjects:', error);
