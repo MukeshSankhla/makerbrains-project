@@ -1,10 +1,10 @@
-
+import { ThemeToggle } from "./ThemeToggle";
 import { Youtube, Github, Linkedin, Instagram, Mail } from "lucide-react"; 
 import { Link } from "react-router-dom";
 
 export function Footer() {
   return (
-    <footer className="py-12 border-t border-border">
+    <footer className="py-4 border-t border-border">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-8">
           {/* About Us Section */}
@@ -146,28 +146,12 @@ export function Footer() {
         </div>
 
         {/* Bottom Border */}
-        <div className="border-t border-gray-700 mt-8 pt-6">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="text-sm text-gray-400">
+        <div className="border-t border-gray-700 mt-6 pt-4">
+          <div className="flex justify-between items-center">
+            <div className="text-sm">
               © {new Date().getFullYear()} Maker Brains. All rights reserved.
             </div>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="https://www.youtube.com/@makerbrains" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="transition-transform hover:scale-110">
-                <Youtube className="w-5 h-5 hover:text-red-600 transition-colors" />
-              </a>
-              <a href="https://github.com/MukeshSankhla" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="transition-transform hover:scale-110">
-                <Github className="w-5 h-5 hover:text-primary/100 transition-colors" />
-              </a>
-              <a href="https://www.linkedin.com/in/mukeshsankhla/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="transition-transform hover:scale-110">
-                <Linkedin className="w-5 h-5 hover:text-primary/100-400 transition-colors" />
-              </a>
-              <a href="https://www.instagram.com/makerbrains_official/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="transition-transform hover:scale-110">
-                <Instagram className="w-5 h-5 hover:text-pink-400 transition-colors" />
-              </a>
-              <Link to="/contact" aria-label="Contact" className="transition-transform hover:scale-110">
-                <Mail className="w-5 h-5 hover:text-primary/100-400 transition-colors" />
-              </Link>
-            </div>
+            <ThemeToggle />
           </div>
         </div>
       </div>

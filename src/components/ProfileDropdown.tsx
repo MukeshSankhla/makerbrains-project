@@ -47,7 +47,6 @@ export function ProfileDropdown({ onLogout }: { onLogout: () => void }) {
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
-        <ThemeToggle />
         <DropdownMenuItem className="flex items-center gap-2 text-destructive"
           onSelect={(e) => {
             e.preventDefault();

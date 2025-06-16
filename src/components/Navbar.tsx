@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
 import { LogOut, Menu, X, Home, ShoppingCart, BookAIcon, VideoIcon, ShipIcon, CarrotIcon, StoreIcon, PlayIcon, HomeIcon } from "lucide-react";
 import logoLight from "/src/images/logo_1.png";
@@ -89,7 +88,7 @@ export function Navbar() {
         {/* Spacer */}
         <div className="flex-1" />
         {/* Right Side Navigation Items */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center">
           {user ? (
             <ProfileDropdown onLogout={handleLogout} />
           ) : (
@@ -97,8 +96,6 @@ export function Navbar() {
               <Link to="/login">
                 <Button variant="outline">Sign In</Button>
               </Link>
-              {/* Theme toggle for logged-out users */}
-              <ThemeToggle />
             </>
           )}
           {/* Cart Icon - now always at far right */}
