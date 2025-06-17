@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { useCart } from "@/hooks/useCart";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function Navbar() {
   const { user, logout } = useAuth();
@@ -55,7 +56,7 @@ export function Navbar() {
             to="/"
             className={`${
               isActive("/") ? "font-bold text-primary" : "text-foreground"
-            } hover:text-primary transition-colors text-m`}
+            } hover:text-primary hover:scale-110 transition-colors text-m`}
           >
             Home
           </Link>
@@ -63,7 +64,7 @@ export function Navbar() {
             to="/shop"
             className={`${
               isActive("/shop") ? "font-bold text-primary" : "text-foreground"
-            } hover:text-primary transition-colors text-m`}
+            } hover:text-primary hover:scale-110 transition-colors text-m`}
           >
             Shop
           </Link>
@@ -71,7 +72,7 @@ export function Navbar() {
             to="/workshops"
             className={`${
               isActive("/workshops") ? "font-bold text-primary" : "text-foreground"
-            } hover:text-primary transition-colors text-m`}
+            } hover:text-primary hover:scale-110 transition-colors text-m`}
           >
             Workshops
           </Link>
@@ -79,17 +80,9 @@ export function Navbar() {
             to="/courses"
             className={`${
               isActive("/courses") ? "font-bold text-primary" : "text-foreground"
-            } hover:text-primary transition-colors text-m`}
+            } hover:text-primary hover:scale-110 transition-colors text-m`}
           >
             Courses
-          </Link>
-          <Link
-            to="/contact"
-            className={`${
-              isActive("/contact") ? "font-bold text-primary" : "text-foreground"
-            } hover:text-primary transition-colors text-m`}
-          >
-            Contact Us
           </Link>
         </div>
         {/* Spacer */}
@@ -105,6 +98,8 @@ export function Navbar() {
               </Link>
             </>
           )}
+          {/* Theme Toggle */}
+          <ThemeToggle/>
           {/* Cart Icon - now always at far right */}
           <Link to="/cart" className="relative">
             <Button variant="ghost" size="icon" className="p-2 relative" aria-label="Cart">
